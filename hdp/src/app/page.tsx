@@ -103,12 +103,22 @@
 // }
 
 // File: app/page.tsx
-import Hero from "@/app/Components/Hero";
+// import Hero from "@/app/Components/Hero";
 
-export default function HomePage() {
+// export default function HomePage() {
+//   return (
+//     <main className="w-full min-h-screen overflow-hidden bg-[#1a1a2e]">
+//       <Hero />
+//     </main>
+//   );
+// }
+
+import ThreeCanvas from './Components/ThreeCanvas';
+
+export default function Home() {
   return (
-    <main className="w-full min-h-screen overflow-hidden bg-[#1a1a2e]">
-      <Hero />
+    <main className="h-screen w-screen overflow-hidden bg-black">
+      <ThreeCanvas />
     </main>
   );
 }

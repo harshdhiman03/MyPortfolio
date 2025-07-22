@@ -25,10 +25,12 @@
 //   );
 // }
 
+
 import { Canvas, useFrame } from "@react-three/fiber";
-import { PointerLockControls, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { PointerLockControls, useGLTF } from "@react-three/drei";
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
+import { useKeyboardControls } from "../hooks/useKeyboardControls";
 
 function RoomModel() {
   const { scene } = useGLTF("/models/gryffindor_common_roomglb.glb");
@@ -36,23 +38,25 @@ function RoomModel() {
 }
 
 function PlayerCamera() {
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+  const keys = useKeyboardControls();
   const controlsRef = useRef<any>(null);
-
-//   useKeyboardControls();
 
   useFrame((state, delta) => {
     const velocity = new THREE.Vector3();
     const speed = 2;
 
-    if (controlsRef.current) {
-      const keys = controlsRef.current;
-      if (keys.forward) velocity.z -= speed * delta;
-      if (keys.backward) velocity.z += speed * delta;
-      if (keys.left) velocity.x -= speed * delta;
-      if (keys.right) velocity.x += speed * delta;
+    if (keys.forward) velocity.z -= speed * delta;
+    if (keys.backward) velocity.z += speed * delta;
+    if (keys.left) velocity.x -= speed * delta;
+    if (keys.right) velocity.x += speed * delta;
 
-      state.camera.position.add(velocity.applyEuler(state.camera.rotation));
+    state.camera.position.add(velocity.applyEuler(state.camera.rotation));
+  });
+
+  // Set initial camera position inside the room
+  useFrame((state) => {
+    if (state.camera.position.equals(new THREE.Vector3(0, 0, 0))) {
+      state.camera.position.set(0, 1.6, 0);
     }
   });
 
@@ -66,7 +70,7 @@ function PlayerCamera() {
 export default function FirstPersonRoom() {
   return (
     <div className="w-screen h-screen">
-      <Canvas camera={{ fov: 75, position: [0, 1.6, 5] }}>
+      <Canvas camera={{ fov: 75, position: [0, 1.6, 0] }}>
         <ambientLight intensity={1.2} />
         <directionalLight position={[2, 5, 3]} />
         <Suspense fallback={null}>
