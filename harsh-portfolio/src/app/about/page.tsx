@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLens, LensType } from '@/context/LensContext';
 import { PolymorphicNavbar } from '@/components/ui/PolymorphicNavbar';
+import { AboutHero } from '@/components/about/AboutHero';
 import { NeuralSkillGraph } from '@/components/about/NeuralSkillGraph';
 import { CircuitTimeline } from '@/components/about/CircuitTimeline';
 import { ResearchLab } from '@/components/about/ResearchLab';
@@ -80,61 +81,23 @@ export default function AboutPage() {
       case 'product':
         return {
           page: 'bg-gradient-to-b from-white via-slate-50 to-white text-slate-900',
-          headline: 'text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight',
-          subtext: 'text-lg md:text-xl lg:text-2xl text-slate-600',
         };
       case 'engineering':
         return {
           page: 'bg-slate-950 text-slate-100',
-          headline: 'text-6xl md:text-7xl lg:text-8xl font-bold font-mono tracking-tight',
-          subtext: 'text-lg md:text-xl lg:text-2xl text-slate-400 font-mono',
         };
       case 'agentic':
         return {
           page: 'bg-[#05050a] text-violet-100',
-          headline: 'text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight',
-          subtext: 'text-lg md:text-xl lg:text-2xl text-violet-300/80',
         };
       default:
         return {
           page: 'bg-[#05050a] text-violet-100',
-          headline: 'text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight',
-          subtext: 'text-lg md:text-xl lg:text-2xl text-violet-300/80',
-        };
-    }
-  };
-
-  const getHeroContent = () => {
-    switch (lens) {
-      case 'product':
-        return {
-          headline: 'I build experiences that matter.',
-          subtext:
-            'Focusing on user-centric design, seamless interfaces, and solving real human problems through technology.',
-        };
-      case 'engineering':
-        return {
-          headline: 'I architect scalable systems.',
-          subtext:
-            'From Azure pipelines to low-latency backends, I build the foundations that keep complex applications running.',
-        };
-      case 'agentic':
-        return {
-          headline: 'I explore intelligent systems.',
-          subtext:
-            'Researching NLP, fine-tuning Transformers, and building autonomous AI agents that reason and act.',
-        };
-      default:
-        return {
-          headline: 'I explore intelligent systems.',
-          subtext:
-            'Researching NLP, fine-tuning Transformers, and building autonomous AI agents that reason and act.',
         };
     }
   };
 
   const styles = getPageStyles();
-  const heroContent = getHeroContent();
 
   return (
     <main className={`relative w-full min-h-screen overflow-x-hidden transition-colors duration-700 ${styles.page}`}>
@@ -158,26 +121,8 @@ export default function AboutPage() {
         <PolymorphicNavbar />
       </div>
 
-      {/* Dynamic Hero Section */}
-      <section className="relative z-10 w-full min-h-[40vh] flex items-center justify-center px-6 py-20 md:py-32">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={lens}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-6"
-            >
-              <h1 className={`${styles.headline}`}>{heroContent.headline}</h1>
-              <p className={`${styles.subtext} max-w-3xl mx-auto leading-relaxed`}>
-                {heroContent.subtext}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </section>
+      {/* About Hero Section */}
+      <AboutHero />
 
       {/* NeuralSkillGraph - Full Width */}
       <section className="relative z-10 w-full">
