@@ -246,7 +246,7 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
       case 'engineering':
         return {
           backdrop: 'bg-black/60 backdrop-blur-lg',
-          card: 'bg-slate-950 text-cyan-50 border border-cyan-500/50 font-mono rounded-none',
+          card: 'bg-slate-950 text-cyan-50 border border-cyan-500/50 font-mono text-sm rounded-none',
           shadow: 'shadow-[0_0_30px_rgba(6,182,212,0.2)]',
           closeButton: 'text-cyan-400 hover:text-cyan-300',
           header: 'text-cyan-400 font-bold text-2xl uppercase tracking-widest',
@@ -365,7 +365,7 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
               </motion.button>
 
               {/* Modal Content */}
-              <div className={`relative z-10 ${lens === 'engineering' ? 'p-6' : 'p-8'}`}>
+              <div className={`relative z-10 ${lens === 'engineering' ? 'p-6 font-mono text-sm' : 'p-8'}`}>
                 {lens === 'product' ? (
                   <ProductCaseStudy project={project} />
                 ) : (
