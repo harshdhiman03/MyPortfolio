@@ -18,25 +18,22 @@ export interface ProductContent {
   techStack: string[];
 }
 
-// Engineering Lens - Developer Tool / LLD Blueprint
-export interface FrontendComponent {
-  component: string;
-  role: string;
-}
-
-export interface DataPipelineStep {
-  step: string;
-  description: string;
-}
-
 export interface EngineeringContent {
   headline: string;
+  architectureFlow: {
+    nodes: { id: string; title: string; tech: string; groupId?: string }[];
+    edges: { fromId: string; toId: string; labelTop: string; labelBottom?: string }[];
+    groups: { id: string; title: string }[];
+  };
+}
+
+export interface EngineeringDeveloperDetails {
   architecture: string;
-  frontendStructure: FrontendComponent[];
-  dataPipeline: DataPipelineStep[];
   coreSnippet: string;
   techStack: string[];
 }
+
+export type EngineeringProjectContent = EngineeringContent & EngineeringDeveloperDetails;
 
 // Temporary type to hold your existing data until we design the Agentic deep dive
 export interface LegacyContent {
@@ -53,7 +50,7 @@ export interface Project {
   stack: string[]; 
   content: {
     product: ProductContent;
-    engineering: EngineeringContent;
+    engineering: EngineeringProjectContent;
     agentic: LegacyContent;
   };
 }
@@ -71,7 +68,7 @@ export const projects: Project[] = [
         targetAudience: "Environmentally conscious consumers, restaurants, and commercial cafeterias.",
         ahaMoment: "The system learns portion-size baselines directly from food datasets. It instantly estimates wasted volume and generates personalized reduction recommendations using only a single post-meal image.",
         swot: {
-          s: "Extreme user convenience—eliminates the dependency on 'before' images. Validated by academia.",
+          s: "Extreme user convenience - eliminates the dependency on 'before' images. Validated by academia.",
           w: "Baseline intelligence is currently tied to specific data (Indian food datasets), scoping its immediate accuracy.",
           o: "Scaling the dataset to global cuisines and adapting for commercial cafeteria SaaS.",
           t: "Relies heavily on the user capturing a clear, well-lit post-meal image for OpenCV to function properly."
@@ -85,18 +82,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Computer Vision to LLM Pipeline",
         architecture: "Monolithic Python application leveraging Streamlit for client-side rendering and PyTorch for zero-latency local inference.",
-        frontendStructure: [
-          { component: "<StreamlitApp />", role: "Root Container" },
-          { component: "├── <ImageUploader />", role: "Captures multipart post-meal image" },
-          { component: "├── <InferenceState />", role: "Manages loading UI during ML processing" },
-          { component: "└── <WasteDashboard />", role: "Renders visual contours and T5 text" }
-        ],
-        dataPipeline: [
-          { step: "Image Ingestion", description: "Base64 decode and normalization to 224x224 tensors." },
-          { step: "OpenCV Edge Detection", description: "Extracts physical boundaries of leftover food." },
-          { step: "EfficientNetB0 Inference", description: "Classifies food type and estimates volume against baseline." },
-          { step: "T5 Generative Pass", description: "Generates actionable reduction advice based on classification." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "edge", title: "Client Edge" },
+            { id: "vision", title: "Vision Compute" },
+            { id: "ml", title: "ML Intelligence" }
+          ],
+          nodes: [
+            { id: "capture", title: "Meal Capture UI", tech: "Streamlit", groupId: "edge" },
+            { id: "ingest", title: "Image Ingestion", tech: "NumPy + OpenCV", groupId: "vision" },
+            { id: "contours", title: "Contour Extractor", tech: "OpenCV", groupId: "vision" },
+            { id: "classifier", title: "Food Classifier", tech: "EfficientNetB0", groupId: "ml" },
+            { id: "advisor", title: "Advice Generator", tech: "T5 Transformer", groupId: "ml" }
+          ],
+          edges: [
+            { fromId: "capture", toId: "ingest", labelTop: "upload", labelBottom: "preview" },
+            { fromId: "ingest", toId: "contours", labelTop: "normalized tensor" },
+            { fromId: "contours", toId: "classifier", labelTop: "features" },
+            { fromId: "classifier", toId: "advisor", labelTop: "prediction", labelBottom: "recommendation" }
+          ]
+        },
         coreSnippet: "def process_waste_image(image):\n    contours = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n    features = efficientnet_model.predict(normalize(image))\n    return calculate_volume(contours, features)",
         techStack: ["Python", "PyTorch", "OpenCV", "Streamlit"],
       },
@@ -134,18 +139,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Session-Based Smart Contracts",
         architecture: "Next.js client with Thirdweb provider, handling gameplay state locally before pushing batched payload to Base Blockchain via Ethers.js.",
-        frontendStructure: [
-          { component: "<ThirdwebProvider />", role: "Global Web3 Context & Auth" },
-          { component: "├── <GameCanvas />", role: "Renders actual gameplay loop" },
-          { component: "├── <SessionManager />", role: "Tracks local state changes (moves/scores)" },
-          { component: "└── <RelayerSync />", role: "Batches local state and triggers wallet signature" }
-        ],
-        dataPipeline: [
-          { step: "Session Init", description: "Player signs a zero-gas typed data message to start." },
-          { step: "Local State Mutations", description: "Game loop runs entirely off-chain in Next.js state." },
-          { step: "State Hashing", description: "Final session state is hashed using Keccak256." },
-          { step: "On-Chain Settlement", description: "Smart contract verifies hash signature and updates balances." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "client", title: "Player Client" },
+            { id: "session", title: "Session Layer" },
+            { id: "chain", title: "Base Chain" }
+          ],
+          nodes: [
+            { id: "wallet", title: "Wallet Auth", tech: "Thirdweb", groupId: "client" },
+            { id: "game", title: "Gameplay Runtime", tech: "Next.js", groupId: "client" },
+            { id: "sessionMgr", title: "Session Manager", tech: "Ethers.js", groupId: "session" },
+            { id: "hash", title: "State Hashing", tech: "Keccak256", groupId: "session" },
+            { id: "settle", title: "Contract Settlement", tech: "Solidity", groupId: "chain" }
+          ],
+          edges: [
+            { fromId: "wallet", toId: "game", labelTop: "session signature" },
+            { fromId: "game", toId: "sessionMgr", labelTop: "move stream" },
+            { fromId: "sessionMgr", toId: "hash", labelTop: "batched state" },
+            { fromId: "hash", toId: "settle", labelTop: "proof", labelBottom: "final balances" }
+          ]
+        },
         coreSnippet: "const initializeSession = async () => {\n  const signature = await signer._signTypedData(domain, types, value);\n  setSessionState({ active: true, sig: signature });\n};",
         techStack: ["Next.js", "Ethers.js", "Solidity"],
       },
@@ -183,18 +196,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Real-Time Visualization & NLP",
         architecture: "Next.js frontend heavily utilizing TradingView charting components, paired with a Python backend running a fine-tuned T5 NLP model.",
-        frontendStructure: [
-          { component: "<DashboardLayout />", role: "Next.js Grid Container" },
-          { component: "├── <TradingViewWidget />", role: "Iframe/JS execution for live candlestick data" },
-          { component: "├── <ChartContext />", role: "Extracts current ticker and timeframe" },
-          { component: "└── <ChainlitChat />", role: "Websocket connection to Python AI backend" }
-        ],
-        dataPipeline: [
-          { step: "Ticker Selection", description: "User changes chart view, triggering state update." },
-          { step: "Data Extraction", description: "Current price action and basic indicators pulled from API." },
-          { step: "Prompt Construction", description: "Numerical data injected into semantic text prompt." },
-          { step: "T5 Inference", description: "68k-record fine-tuned model generates contextual advice." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "client", title: "Investor UI" },
+            { id: "data", title: "Data Context" },
+            { id: "ai", title: "AI Analysis" }
+          ],
+          nodes: [
+            { id: "chart", title: "Chart Widget", tech: "TradingView", groupId: "client" },
+            { id: "ticker", title: "Ticker Context", tech: "Next.js State", groupId: "data" },
+            { id: "prompt", title: "Prompt Builder", tech: "Python API", groupId: "data" },
+            { id: "inference", title: "T5 Inference", tech: "Fine-Tuned T5", groupId: "ai" },
+            { id: "insight", title: "Insight Feed", tech: "Chainlit", groupId: "ai" }
+          ],
+          edges: [
+            { fromId: "chart", toId: "ticker", labelTop: "price action" },
+            { fromId: "ticker", toId: "prompt", labelTop: "market context" },
+            { fromId: "prompt", toId: "inference", labelTop: "semantic prompt" },
+            { fromId: "inference", toId: "insight", labelTop: "analysis", labelBottom: "chat response" }
+          ]
+        },
         coreSnippet: "export default function TradingChart({ symbol }) {\n  return (\n    <div className=\"tradingview-widget-container\">\n      <AdvancedRealTimeChart symbol={symbol} theme=\"dark\" />\n    </div>\n  );\n}",
         techStack: ["Next.js", "TradingView", "Python", "T5"],
       },
@@ -232,18 +253,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Multi-Modal Inference Pipeline",
         architecture: "Streamlit UI acts as a rapid ingestion portal, passing user URLs into a synchronous Python scraping and dual-model inference pipeline.",
-        frontendStructure: [
-          { component: "<ThreatScoutApp />", role: "Streamlit Main View" },
-          { component: "├── <URLInputBox />", role: "Captures target domain" },
-          { component: "├── <ProgressTracker />", role: "Shows visual breakdown of scraping vs inference" },
-          { component: "└── <SecurityReport />", role: "Displays final 96.8% confidence score" }
-        ],
-        dataPipeline: [
-          { step: "URL Submission", description: "Target string passed to BeautifulSoup." },
-          { step: "DOM Parsing", description: "Extracts textual structure and downloads rendered image assets." },
-          { step: "Parallel Inference", description: "LSTM processes text sequences; CNN processes image tensors." },
-          { step: "Heuristic Aggregation", description: "Combines ML outputs for final Safe/Phishing classification." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "edge", title: "Input Edge" },
+            { id: "scrape", title: "Scraping Layer" },
+            { id: "detect", title: "Detection Layer" }
+          ],
+          nodes: [
+            { id: "url", title: "URL Intake", tech: "Streamlit", groupId: "edge" },
+            { id: "dom", title: "DOM Parser", tech: "BeautifulSoup", groupId: "scrape" },
+            { id: "assets", title: "Asset Extractor", tech: "Image Fetch", groupId: "scrape" },
+            { id: "models", title: "LSTM + CNN", tech: "Parallel Inference", groupId: "detect" },
+            { id: "verdict", title: "Risk Verdict", tech: "Heuristic Scorer", groupId: "detect" }
+          ],
+          edges: [
+            { fromId: "url", toId: "dom", labelTop: "target domain" },
+            { fromId: "dom", toId: "assets", labelTop: "text + media" },
+            { fromId: "assets", toId: "models", labelTop: "feature bundles" },
+            { fromId: "models", toId: "verdict", labelTop: "threat score", labelBottom: "safe/phishing" }
+          ]
+        },
         coreSnippet: "def analyze_domain(url):\n    html, images = scraper.extract(url)\n    text_score = lstm_model.predict(html)\n    img_score = cnn_model.predict(images)\n    return weighted_average(text_score, img_score)",
         techStack: ["Python", "LSTM", "CNN", "BeautifulSoup"],
       },
@@ -281,17 +310,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Encoder-Decoder Architecture",
         architecture: "Core Machine Learning architecture built natively in TensorFlow without high-level abstraction libraries, running in Jupyter/Python environments.",
-        frontendStructure: [
-          { component: "<No_GUI />", role: "Headless execution" },
-          { component: "├── Training Script", role: "Executes epoch loops and loss calculation" },
-          { component: "└── Inference Script", role: "Command line input for English string" }
-        ],
-        dataPipeline: [
-          { step: "Tokenization", description: "Sub-word splitting and vocabulary mapping." },
-          { step: "Positional Encoding", description: "Injects sequence order mathematics into embeddings." },
-          { step: "Self-Attention", description: "Calculates Query, Key, Value matrices for contextual weights." },
-          { step: "Softmax Output", description: "Generates probability distribution for French token prediction." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "prep", title: "Sequence Prep" },
+            { id: "encode", title: "Transformer Core" },
+            { id: "decode", title: "Decoder Head" }
+          ],
+          nodes: [
+            { id: "tokens", title: "Tokenization", tech: "Subword Vocab", groupId: "prep" },
+            { id: "position", title: "Positional Encode", tech: "Sinusoidal Math", groupId: "prep" },
+            { id: "attention", title: "Self Attention", tech: "QKV Matrices", groupId: "encode" },
+            { id: "ffn", title: "Feed Forward", tech: "TensorFlow", groupId: "encode" },
+            { id: "softmax", title: "Token Output", tech: "Softmax Decoder", groupId: "decode" }
+          ],
+          edges: [
+            { fromId: "tokens", toId: "position", labelTop: "indexed sequence" },
+            { fromId: "position", toId: "attention", labelTop: "embedded vectors" },
+            { fromId: "attention", toId: "ffn", labelTop: "context weights" },
+            { fromId: "ffn", toId: "softmax", labelTop: "logits", labelBottom: "next token" }
+          ]
+        },
         coreSnippet: "class MultiHeadAttention(tf.keras.layers.Layer):\n  def call(self, v, k, q, mask):\n    attention_weights = tf.matmul(q, k, transpose_b=True)\n    # scaled dot-product logic from scratch",
         techStack: ["TensorFlow", "Math", "Python"],
       },
@@ -329,18 +367,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Component-Driven Architecture",
         architecture: "Client-side React Single Page Application acting as a visual builder, translating drag-and-drop UI state into raw, compliant HTML structures.",
-        frontendStructure: [
-          { component: "<EmailBuilderLayout />", role: "Main application wrapper" },
-          { component: "├── <ComponentSidebar />", role: "Library of draggable React blocks" },
-          { component: "├── <DropCanvas />", role: "Active workspace tracking array index" },
-          { component: "└── <ExportEngine />", role: "Compiles React virtual DOM to inline-CSS HTML" }
-        ],
-        dataPipeline: [
-          { step: "User Interaction", description: "Component dropped onto canvas, updating local state array." },
-          { step: "Live Preview", description: "React maps array to DOM elements for WYSIWYG editing." },
-          { step: "AST Generation", description: "Layout state converted to a JSON Abstract Syntax Tree." },
-          { step: "HTML Compilation", description: "JSON mapped to rigid table-based HTML for email clients." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "ui", title: "Builder UI" },
+            { id: "state", title: "State Engine" },
+            { id: "export", title: "Export Pipeline" }
+          ],
+          nodes: [
+            { id: "sidebar", title: "Component Library", tech: "React DnD", groupId: "ui" },
+            { id: "canvas", title: "Drop Canvas", tech: "React State", groupId: "ui" },
+            { id: "layout", title: "Layout AST", tech: "JSON Schema", groupId: "state" },
+            { id: "compiler", title: "HTML Compiler", tech: "Inline CSS", groupId: "export" },
+            { id: "preview", title: "Email Preview", tech: "Template Renderer", groupId: "export" }
+          ],
+          edges: [
+            { fromId: "sidebar", toId: "canvas", labelTop: "drag payload" },
+            { fromId: "canvas", toId: "layout", labelTop: "component state" },
+            { fromId: "layout", toId: "compiler", labelTop: "render plan" },
+            { fromId: "compiler", toId: "preview", labelTop: "compiled HTML", labelBottom: "QA ready" }
+          ]
+        },
         coreSnippet: "const handleDrop = (item) => {\n  setCanvasState(prev => [...prev, {\n    id: uuid(),\n    type: item.type,\n    styles: defaultStyles[item.type]\n  }]);\n};",
         techStack: ["React", "JavaScript", "CSS"],
       },
@@ -378,17 +424,26 @@ export const projects: Project[] = [
       engineering: {
         headline: "Cloud-Native Data Pipelines",
         architecture: "Enterprise data engineering architecture orchestrating large-scale ETL jobs using Azure infrastructure and .NET Core microservices.",
-        frontendStructure: [
-          { component: "<AdminDashboard />", role: "Internal React view for monitoring pipelines" },
-          { component: "├── <JobStatusGrid />", role: "Polls .NET backend for execution status" },
-          { component: "└── <TriggerControls />", role: "Manual overrides for automated workflows" }
-        ],
-        dataPipeline: [
-          { step: "Data Ingestion", description: "Azure Data Factory pulls raw files from legacy blob storage." },
-          { step: "Transformation", description: "Databricks PySpark clusters clean and normalize the data." },
-          { step: "Serving Layer", description: "Clean data is written to SQL Server." },
-          { step: "API Exposure", description: ".NET Core REST APIs serve structured data to end clients." }
-        ],
+        architectureFlow: {
+          groups: [
+            { id: "azure", title: "Azure Cloud" },
+            { id: "compute", title: "Data Processing" },
+            { id: "serve", title: "Service Layer" }
+          ],
+          nodes: [
+            { id: "ingest", title: "Data Factory", tech: "ADF Pipelines", groupId: "azure" },
+            { id: "lake", title: "Raw Storage", tech: "Blob Storage", groupId: "azure" },
+            { id: "spark", title: "Databricks Jobs", tech: "PySpark", groupId: "compute" },
+            { id: "sql", title: "Serving DB", tech: "SQL Server", groupId: "serve" },
+            { id: "api", title: "API Gateway", tech: ".NET Core", groupId: "serve" }
+          ],
+          edges: [
+            { fromId: "ingest", toId: "lake", labelTop: "raw batches" },
+            { fromId: "lake", toId: "spark", labelTop: "etl trigger" },
+            { fromId: "spark", toId: "sql", labelTop: "curated tables" },
+            { fromId: "sql", toId: "api", labelTop: "query response", labelBottom: "dashboard data" }
+          ]
+        },
         coreSnippet: "public async Task<IActionResult> TriggerEtlJob()\n{\n    var response = await _databricksClient.Jobs.RunNow(jobId);\n    return Ok(new { RunId = response.RunId });\n}",
         techStack: ["Azure", "Databricks", ".NET Core"],
       },

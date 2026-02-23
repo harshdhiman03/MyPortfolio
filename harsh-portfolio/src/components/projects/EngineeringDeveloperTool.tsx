@@ -17,8 +17,139 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
+type ArchitectureFlow = EngineeringContent['architectureFlow'];
+type ArchitectureNode = ArchitectureFlow['nodes'][number];
+type ArchitectureEdge = ArchitectureFlow['edges'][number];
+
+type FlowSegment = {
+  groupId?: string;
+  nodes: ArchitectureNode[];
+};
+
+const buildFlowSegments = (nodes: ArchitectureNode[]): FlowSegment[] => {
+  const segments: FlowSegment[] = [];
+
+  nodes.forEach((node) => {
+    const lastSegment = segments[segments.length - 1];
+
+    if (lastSegment && lastSegment.groupId === node.groupId) {
+      lastSegment.nodes.push(node);
+      return;
+    }
+
+    segments.push({
+      groupId: node.groupId,
+      nodes: [node],
+    });
+  });
+
+  return segments;
+};
+
+const ArchitectureNodeCard = ({ node }: { node: ArchitectureNode }) => (
+  <div className="w-40 h-24 bg-blue-950/40 border-2 border-blue-500/50 rounded flex flex-col items-center justify-center text-center shadow-[0_0_15px_rgba(59,130,246,0.15)] z-10 relative">
+    <div className="text-blue-100 font-bold text-sm px-2">{node.title}</div>
+    <div className="text-blue-400/70 text-xs mt-1 px-2">{node.tech}</div>
+  </div>
+);
+
+const ArchitectureConnector = ({ edge }: { edge?: ArchitectureEdge }) => (
+  <div className="relative w-24 h-16 flex-shrink-0">
+    <div className="absolute left-0 right-2 top-1/2 -translate-y-1/2 border-t border-dashed border-blue-500/70" />
+    <div className="absolute right-0 top-1/2 -translate-y-1/2 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[8px] border-l-blue-400/90" />
+    <div className="absolute top-1 left-1/2 -translate-x-1/2 text-[10px] text-blue-500 whitespace-nowrap">
+      {edge?.labelTop ?? ''}
+    </div>
+    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] text-blue-500 whitespace-nowrap">
+      {edge?.labelBottom ?? ''}
+    </div>
+  </div>
+);
+
+const ArchitectureDiagram = ({ flow }: { flow: ArchitectureFlow }) => {
+  const edgeLookup = new Map(
+    flow.edges.map((edge) => [`${edge.fromId}->${edge.toId}`, edge] as const),
+  );
+  const groupLookup = new Map(flow.groups.map((group) => [group.id, group.title] as const));
+  const segments = buildFlowSegments(flow.nodes);
+
+  const getEdge = (fromId: string, toId: string) => edgeLookup.get(`${fromId}->${toId}`);
+
+  const renderSegment = (segment: FlowSegment) => {
+    const segmentContent = (
+      <div className="flex flex-row items-center justify-center gap-12">
+        {segment.nodes.map((node, index) => {
+          const nextNode = segment.nodes[index + 1];
+          return (
+            <React.Fragment key={node.id}>
+              <ArchitectureNodeCard node={node} />
+              {nextNode && <ArchitectureConnector edge={getEdge(node.id, nextNode.id)} />}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+
+    if (!segment.groupId) {
+      return segmentContent;
+    }
+
+    return (
+      <div className="border border-dashed border-blue-700/50 bg-blue-900/10 p-6 rounded-lg relative">
+        <span className="text-blue-500 text-xs absolute -top-3 right-4 bg-[#030b14] px-2">
+          {groupLookup.get(segment.groupId) ?? segment.groupId}
+        </span>
+        {segmentContent}
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-[#030b14] border border-blue-900/50 rounded-xl p-8 relative overflow-x-auto">
+      <div
+        className="absolute inset-0 opacity-35 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      <div className="relative z-10 min-w-max">
+        <div className="flex flex-row items-center justify-center gap-12">
+          {segments.map((segment, index) => {
+            const nextSegment = segments[index + 1];
+            const lastNode = segment.nodes[segment.nodes.length - 1];
+            const nextNode = nextSegment?.nodes[0];
+
+            return (
+              <React.Fragment key={`${segment.groupId ?? 'ungrouped'}-${lastNode.id}`}>
+                {renderSegment(segment)}
+                {nextNode && <ArchitectureConnector edge={getEdge(lastNode.id, nextNode.id)} />}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-6 text-[10px] text-blue-500">
+          <div className="flex items-center gap-2">
+            <span className="w-8 h-px bg-blue-500" />
+            <span>Data Flow</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 border border-dashed border-blue-500" />
+            <span>Services</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const EngineeringDeveloperTool = ({ project }: { project: Project }) => {
-  const content = project.content.engineering as EngineeringContent;
+  const content = project.content.engineering;
 
   return (
     <motion.div
@@ -58,35 +189,10 @@ export const EngineeringDeveloperTool = ({ project }: { project: Project }) => {
         </p>
       </motion.div>
 
-      {/* Component Tree */}
+      {/* Architecture Blueprint */}
       <motion.div variants={itemVariants}>
-        <p className="text-cyan-400 text-xs uppercase tracking-widest mb-3 font-bold"> COMPONENT_TREE (REACT/FRONTEND)</p>
-        <div className="bg-[#0d1117] border border-slate-800 rounded-md p-4 space-y-1">
-          {content.frontendStructure.map((comp, idx) => (
-            <motion.div
-              key={idx}
-              variants={itemVariants}
-              className="font-mono text-xs leading-relaxed"
-            >
-              <span className="text-cyan-400">{comp.component}</span>
-              <span className="text-slate-500 ml-4">{'// '}{comp.role}</span>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Data Pipeline */}
-      <motion.div variants={itemVariants}>
-        <p className="text-cyan-400 text-xs uppercase tracking-widest mb-3 font-bold"> DATA_PIPELINE (BACKEND/ML FLOW)</p>
-        <div className="border-l-2 border-slate-800 ml-3 pl-6 relative space-y-6">
-          {content.dataPipeline.map((step, idx) => (
-            <motion.div key={idx} variants={itemVariants} className="relative">
-              <div className="absolute bg-blue-500 rounded-full w-2 h-2 -left-[29px] mt-1.5" />
-              <div className="text-blue-400 font-bold uppercase tracking-wider">{step.step}</div>
-              <div className="text-slate-300 mt-1">{step.description}</div>
-            </motion.div>
-          ))}
-        </div>
+        <p className="text-cyan-400 text-xs uppercase tracking-widest mb-3 font-bold"> ARCHITECTURE_FLOW_BLUEPRINT</p>
+        <ArchitectureDiagram flow={content.architectureFlow} />
       </motion.div>
 
       {/* Core Implementation */}
