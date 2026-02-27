@@ -56,96 +56,51 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to get response');
-
-      let assistantContent = '';
-      let toolCallLens: 'product' | 'engineering' | 'agentic' | null = null;
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (reader) {
-        let buffer = '';
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
-
-          // Process complete lines in the buffer
-          const lines = buffer.split('\n');
-          
-          // Keep the last potentially incomplete line in buffer for next iteration
-          buffer = lines[lines.length - 1];
-
-          for (let i = 0; i < lines.length - 1; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-
-            // Parse each line which contains structured data
-            // Format is: {"type":"...", ...}
-            try {
-              // Extract JSON from the line (might have prefix like '0:')
-              const jsonMatch = line.match(/(\{.*\})/);
-              if (!jsonMatch) continue;
-
-              const jsonData = JSON.parse(jsonMatch[1]);
-
-              // Handle different event types from the UI message stream
-              if (jsonData.type === 'text') {
-                // Regular text content
-                assistantContent += jsonData.text || '';
-              } else if (jsonData.type === 'tool-call') {
-                // Tool call event
-                if (jsonData.toolName === 'switchLens' && jsonData.input?.lens) {
-                  toolCallLens = jsonData.input.lens;
-                }
-              } else if (jsonData.type === 'tool-result') {
-                // Tool result event - another place where lens might be confirmed
-                if (jsonData.toolName === 'switchLens' && jsonData.result?.lens) {
-                  toolCallLens = jsonData.result.lens;
-                }
-              }
-            } catch {
-              // If line isn't valid JSON or doesn't match pattern, ignore it
-              // The stream format might be different than expected
-            }
-          }
+      if (!response.ok) {
+        let errorPayload: { error?: string } | null = null;
+        try {
+          errorPayload = await response.json();
+        } catch {
+          // ignore JSON parse errors for failed responses
         }
 
-        // Process any remaining buffer
-        if (buffer.trim()) {
-          try {
-            const jsonMatch = buffer.match(/(\{.*\})/);
-            if (jsonMatch) {
-              const jsonData = JSON.parse(jsonMatch[1]);
-              if (jsonData.type === 'text') {
-                assistantContent += jsonData.text || '';
-              } else if (jsonData.type === 'tool-call' && jsonData.toolName === 'switchLens') {
-                toolCallLens = jsonData.input?.lens;
-              }
-            }
-          } catch {
-            // Ignore parse errors for remaining buffer
-          }
-        }
+        const errorText =
+          errorPayload?.error || `Request failed with status ${response.status}`;
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: 'assistant',
+            content: `Error: ${errorText}`,
+          },
+        ]);
+        return;
       }
 
-      const cleanContent = assistantContent.trim();
+      const data = await response.json();
+      console.log('=== RAW API RESPONSE ===', data);
+      const apiMessage = typeof data?.message === 'string' ? data.message : '';
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: cleanContent || 'I\'ve updated the portfolio view for you.',
+        content: apiMessage || 'Failed to parse API message.',
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
 
-      // If a lens switch was requested, execute it
-      if (toolCallLens) {
+      // Execute UI action if requested by backend
+      if (
+        data?.action &&
+        data.action.type === 'switchLens' &&
+        (data.action.payload === 'product' ||
+          data.action.payload === 'engineering' ||
+          data.action.payload === 'agentic')
+      ) {
         // Use a small delay to let the UI update first
         setTimeout(() => {
-          options.onLensSwitch?.(toolCallLens);
+          options.onLensSwitch?.(data.action.payload);
         }, 300);
       }
     } catch (error) {

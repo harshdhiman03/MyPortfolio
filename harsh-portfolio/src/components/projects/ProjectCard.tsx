@@ -61,6 +61,18 @@ const THOUGHT_PROCESS: Record<string, string[]> = {
 export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProps) => {
   const { lens } = useLens();
   const lensContent = project.content[lens];
+  const descriptionText =
+    lens === 'product'
+      ? project.content.product.painPoint
+      : lens === 'agentic'
+      ? project.content.agentic.coreLogic
+      : 'A groundbreaking project';
+  const statText =
+    lens === 'product'
+      ? project.content.product.keyAchievements?.[0]?.value || 'View More'
+      : lens === 'agentic'
+      ? project.content.agentic.paradigm
+      : 'Explore';
   const relevantTechs = LENS_TECH_MAP[lens] || [];
   const codeSnippet = CODE_SNIPPETS[project.id] || '';
   const thoughts = THOUGHT_PROCESS[project.id] || [];
@@ -318,11 +330,7 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
                   : 'text-purple-200/80'
               }`}
             >
-              {lens === 'product' && 'painPoint' in lensContent 
-                ? lensContent.painPoint
-                : 'description' in lensContent 
-                ? lensContent.description
-                : 'A groundbreaking project'}
+              {descriptionText}
             </p>
 
             {/* Stat Badge */}
@@ -338,11 +346,7 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
                     : 'bg-purple-500/20 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50'
                 }`}
               >
-                {lens === 'product' && 'keyAchievements' in lensContent
-                  ? lensContent.keyAchievements?.[0]?.value || 'View More'
-                  : 'stat' in lensContent
-                  ? lensContent.stat
-                  : 'Explore'}
+                {statText}
               </motion.div>
             </div>
           </motion.div>

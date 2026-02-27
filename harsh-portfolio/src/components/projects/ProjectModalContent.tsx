@@ -59,28 +59,6 @@ const contract = new ethers.Contract(
 await contract.recordSession(sessionId);`,
 };
 
-// Mock chat bubbles for agentic lens
-const THOUGHT_PROCESS: Record<string, string[]> = {
-  'infosys-tv': [
-    'Analyzing workflow bottlenecks...',
-    'Optimizing process logic...',
-    'Deploying automation...',
-    '✓ 36% improvement achieved',
-  ],
-  'foodoptima': [
-    'Scanning food waste patterns...',
-    'Fine-tuning T5 model...',
-    'Generating recommendations...',
-    '✓ Recommendations ready',
-  ],
-  'runic-realm': [
-    'Analyzing player behavior...',
-    'Detecting anomalies...',
-    'Securing session...',
-    '✓ Session protected',
-  ],
-};
-
 // Product Lens Case Study Layout
 const ProductCaseStudy = ({ project }: { project: Project }) => {
   const content = project.content.product;
@@ -229,6 +207,72 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
   );
 };
 
+const AgenticExecutionTrace = ({ project }: { project: Project }) => {
+  const content = project.content.agentic;
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6 font-mono"
+    >
+      <motion.div
+        variants={itemVariants}
+        className="bg-[#05010a] border border-purple-500/30 rounded-xl p-6 shadow-[inset_0_0_50px_rgba(168,85,247,0.1)]"
+      >
+        <p className="text-emerald-400 text-xs tracking-widest mb-6">
+          [ AGENT_STATUS: ONLINE ] | [ MODE: AUTONOMOUS ] | [ PARADIGM: {content.paradigm} ]
+        </p>
+
+        <h2 className="text-purple-100 text-2xl font-bold">{content.headline}</h2>
+
+        <div className="mt-8">
+          <p className="text-purple-400 text-sm mb-4 opacity-80">
+            &gt; EXECUTION_TRACE // CHAIN_OF_THOUGHT
+          </p>
+          <div className="border-l border-purple-900/50 pl-4 ml-2 space-y-4">
+            {content.reasoningTrace.map((trace, index) => (
+              <motion.div key={`${trace.step}-${index}`} variants={itemVariants} className="space-y-2">
+                <p className="text-purple-500 text-xs">[STEP_{index + 1}]</p>
+                <p className="text-xs leading-relaxed">
+                  <span className="text-cyan-400 text-xs mr-2">ACTION::</span>
+                  <span className="text-slate-300">{trace.action}</span>
+                </p>
+                <p className="text-xs leading-relaxed">
+                  <span className="text-emerald-400 text-xs mr-2">OBSERVATION/RESULT::</span>
+                  <span className="text-slate-400">{trace.result}</span>
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <p className="text-purple-400 text-sm mb-3 opacity-80">&gt; CORE_MEMORY_BLOCK</p>
+          <div className="bg-[#0a0514] border border-purple-500/20 p-4 rounded-md mt-2">
+            <p className="text-purple-200/70 text-sm leading-relaxed">{content.coreLogic}</p>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <p className="text-purple-400 text-sm mb-3 opacity-80">&gt; TECH_STACK // NEURAL_NODES</p>
+          <div className="flex flex-wrap gap-2">
+            {content.techStack.map((tech) => (
+              <span
+                key={tech}
+                className="bg-purple-900/20 text-purple-300 border border-purple-500/30 px-3 py-1 text-xs rounded-full"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps) => {
   const { lens } = useLens();
 
@@ -368,9 +412,11 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
               <div className={`relative z-10 ${lens === 'engineering' ? 'p-6 font-mono text-sm' : 'p-8'}`}>
                 {lens === 'product' ? (
                   <ProductCaseStudy project={project} />
+                ) : lens === 'agentic' ? (
+                  <AgenticExecutionTrace project={project} />
                 ) : (
                   <>
-                    {/* Visual Section for Engineering & Agentic */}
+                    {/* Visual Section for Engineering */}
                     {lens === 'engineering' && (
                       <motion.div
                         initial={{ opacity: 0 }}
@@ -391,32 +437,6 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
                         </pre>
                       </motion.div>
                     )}
-
-                    {lens === 'agentic' && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4 }}
-                        className="mb-8 p-6 gap-3 flex flex-col"
-                      >
-                        {(THOUGHT_PROCESS[project.id] || []).map((thought, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className={`max-w-xs px-4 py-2 rounded-lg text-sm font-mono backdrop-blur-md ${
-                              thought.includes('✓')
-                                ? 'bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 shadow-lg shadow-emerald-500/30'
-                                : 'bg-violet-500/20 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/30'
-                            }`}
-                          >
-                            {thought}
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    )}
-
                     <h2 className={styles.header}>
                       {project.title}
                     </h2>
@@ -435,3 +455,4 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
     </AnimatePresence>
   );
 };
+

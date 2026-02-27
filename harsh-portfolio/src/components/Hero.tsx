@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
-import { ProductCard } from './hero/ProductCard';
+import { GenerativeUIHero } from './hero/GenerativeUIHero';
 import { SystemDiagram } from './hero/SystemDiagram';
 import { AgentTerminal } from './hero/AgentTerminal';
 
@@ -13,7 +13,7 @@ const HERO_CONTENT = {
     headline: 'Building Award-Winning Web3 & AI Experiences.',
     subtitle: 'HackIndia Spark-2 Winner.',
     cta: 'View Case Study',
-    component: ProductCard,
+    component: GenerativeUIHero,
   },
   engineering: {
     headline: 'Architecting Scalable Cloud Pipelines.',
@@ -333,7 +333,7 @@ export const Hero = () => {
                   : 'text-cyan-400'
               }`}
             >
-              AI/Web3
+              Full-Stack AI
             </p>
             <p
               className={`font-mono text-sm ${

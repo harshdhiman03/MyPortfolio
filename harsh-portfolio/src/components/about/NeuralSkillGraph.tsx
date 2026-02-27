@@ -1,166 +1,221 @@
-'use client';
+﻿'use client';
 
-import React, { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useLens, type LensType } from '@/context/LensContext';
+import * as d3 from 'd3-force';
+import type { SimulationNodeDatum } from 'd3-force';
+import type { ForceGraphMethods, NodeObject } from 'react-force-graph-2d';
 
-type MainNodeId = 'ai' | 'fullStack' | 'cloud';
+const ForceGraph2D = dynamic(
+  () => import('react-force-graph-2d').then((module) => module.default),
+  { ssr: false },
+);
 
-type MainNode = {
-  id: MainNodeId;
-  label: string;
-  tooltip: string;
-  x: number;
-  y: number;
-};
-
-type SubNode = {
+type GraphNode = {
   id: string;
-  label: string;
-  parentId: MainNodeId;
-  x: number;
-  y: number;
+  group: number;
+  val: number;
+  name?: string;
+  fx?: number;
+  fy?: number;
 };
 
-const MAIN_NODES: MainNode[] = [
-  {
-    id: 'ai',
-    label: 'AI & GenAI',
-    tooltip: 'Transformers, retrieval systems, and agent tooling for intelligent products.',
-    x: 50,
-    y: 22,
-  },
-  {
-    id: 'fullStack',
-    label: 'Full Stack Engineering',
-    tooltip: 'End-to-end product delivery from UI systems to backend APIs.',
-    x: 28,
-    y: 72,
-  },
-  {
-    id: 'cloud',
-    label: 'Cloud & DevOps',
-    tooltip: 'Production reliability through cloud infra, data pipelines, and automation.',
-    x: 72,
-    y: 72,
-  },
-];
-
-const SUB_NODES: SubNode[] = [
-  { id: 't5', label: 'T5 Transformers', parentId: 'ai', x: 35, y: 10 },
-  { id: 'rag', label: 'RAG', parentId: 'ai', x: 43, y: 5 },
-  { id: 'hf', label: 'Hugging Face', parentId: 'ai', x: 57, y: 5 },
-  { id: 'pt', label: 'PyTorch', parentId: 'ai', x: 65, y: 10 },
-  { id: 'lc', label: 'LangChain', parentId: 'ai', x: 50, y: 36 },
-
-  { id: 'next', label: 'Next.js', parentId: 'fullStack', x: 12, y: 62 },
-  { id: 'react', label: 'React', parentId: 'fullStack', x: 14, y: 78 },
-  { id: 'tailwind', label: 'Tailwind', parentId: 'fullStack', x: 22, y: 90 },
-  { id: 'node', label: 'Node.js', parentId: 'fullStack', x: 34, y: 90 },
-  { id: 'ts', label: 'TypeScript', parentId: 'fullStack', x: 40, y: 78 },
-
-  { id: 'azure', label: 'Azure', parentId: 'cloud', x: 88, y: 62 },
-  { id: 'dbrx', label: 'Databricks', parentId: 'cloud', x: 86, y: 78 },
-  { id: 'docker', label: 'Docker', parentId: 'cloud', x: 78, y: 90 },
-  { id: 'cicd', label: 'CI/CD', parentId: 'cloud', x: 66, y: 90 },
-];
-
-const productNodeColors: Record<MainNodeId, string> = {
-  ai: 'bg-blue-500',
-  fullStack: 'bg-indigo-500',
-  cloud: 'bg-sky-500',
+type GraphLink = {
+  source: string;
+  target: string;
 };
 
-const engineeringNodeColors: Record<MainNodeId, string> = {
-  ai: 'border-cyan-400 text-cyan-300',
-  fullStack: 'border-emerald-400 text-emerald-300',
-  cloud: 'border-blue-400 text-blue-300',
+const graphData: { nodes: GraphNode[]; links: GraphLink[] } = {
+  nodes: [
+    { id: 'Me', group: 0, val: 30, name: 'Harsh Dhiman' },
+    { id: 'AI', group: 1, val: 20, name: 'AI & ML' },
+    { id: 'Cloud', group: 2, val: 20, name: 'Cloud & Data' },
+    { id: 'Web', group: 3, val: 20, name: 'Full Stack' },
+    { id: 'Web3', group: 4, val: 20, name: 'Blockchain' },
+    { id: 'TensorFlow', group: 1, val: 10 },
+    { id: 'PyTorch', group: 1, val: 10 },
+    { id: 'OpenCV', group: 1, val: 10 },
+    { id: 'T5 Transformer', group: 1, val: 10 },
+    { id: 'LSTM & CNN', group: 1, val: 10 },
+    { id: 'LangChain', group: 1, val: 10 },
+    { id: 'Hugging Face', group: 1, val: 10 },
+    { id: 'Azure', group: 2, val: 10 },
+    { id: 'Databricks', group: 2, val: 10 },
+    { id: 'SQL', group: 2, val: 10 },
+    { id: 'ETL', group: 2, val: 10 },
+    { id: 'React.js', group: 3, val: 10 },
+    { id: 'Next.js', group: 3, val: 10 },
+    { id: 'TypeScript', group: 3, val: 10 },
+    { id: 'Tailwind', group: 3, val: 10 },
+    { id: '.NET Core', group: 3, val: 10 },
+    { id: 'Python', group: 3, val: 10 },
+    { id: 'Solidity', group: 4, val: 10 },
+    { id: 'Ethers.js', group: 4, val: 10 },
+    { id: 'ThirdWeb', group: 4, val: 10 },
+  ],
+  links: [
+    { source: 'Me', target: 'AI' },
+    { source: 'Me', target: 'Cloud' },
+    { source: 'Me', target: 'Web' },
+    { source: 'Me', target: 'Web3' },
+    { source: 'AI', target: 'TensorFlow' },
+    { source: 'AI', target: 'PyTorch' },
+    { source: 'AI', target: 'OpenCV' },
+    { source: 'AI', target: 'T5 Transformer' },
+    { source: 'AI', target: 'LSTM & CNN' },
+    { source: 'AI', target: 'LangChain' },
+    { source: 'AI', target: 'Hugging Face' },
+    { source: 'Cloud', target: 'Azure' },
+    { source: 'Cloud', target: 'Databricks' },
+    { source: 'Cloud', target: 'SQL' },
+    { source: 'Cloud', target: 'ETL' },
+    { source: 'Web', target: 'React.js' },
+    { source: 'Web', target: 'Next.js' },
+    { source: 'Web', target: 'TypeScript' },
+    { source: 'Web', target: 'Tailwind' },
+    { source: 'Web', target: '.NET Core' },
+    { source: 'Web', target: 'Python' },
+    { source: 'Web3', target: 'Solidity' },
+    { source: 'Web3', target: 'Ethers.js' },
+    { source: 'Web3', target: 'ThirdWeb' },
+    { source: 'Python', target: 'AI' },
+    { source: 'Next.js', target: 'Web3' },
+    { source: 'Databricks', target: 'Python' },
+  ],
 };
 
-const agenticNodeColors: Record<MainNodeId, string> = {
-  ai: 'bg-violet-500/35 border-violet-300/60 text-violet-100 shadow-[0_0_24px_rgba(167,139,250,0.7)]',
-  fullStack: 'bg-fuchsia-500/30 border-fuchsia-300/60 text-fuchsia-100 shadow-[0_0_24px_rgba(232,121,249,0.65)]',
-  cloud: 'bg-indigo-500/30 border-indigo-300/60 text-indigo-100 shadow-[0_0_24px_rgba(129,140,248,0.7)]',
+const meNode = graphData.nodes.find((node) => node.id === 'Me');
+if (meNode) {
+  meNode.fx = 0;
+  meNode.fy = 0;
+}
+
+const groupColor: Record<number, string> = {
+  0: '#f8fafc',
+  1: '#a855f7',
+  2: '#3b82f6',
+  3: '#06b6d4',
+  4: '#10b981',
 };
 
-const getLineStyleByLens = (lens: LensType) => {
-  if (lens === 'product') {
-    return {
-      stroke: '#94a3b8',
-      strokeWidth: 0.35,
-      linecap: 'round' as const,
-      dashArray: undefined,
-    };
+const getPanelStyles = (lens: LensType) => {
+  switch (lens) {
+    case 'product':
+      return {
+        section: 'bg-gradient-to-br from-slate-50 to-blue-50/70 border border-slate-200/70',
+        title: 'text-slate-900',
+        subtitle: 'text-slate-600',
+      };
+    case 'engineering':
+      return {
+        section: 'bg-slate-950 border border-slate-800',
+        title: 'text-slate-100 font-mono',
+        subtitle: 'text-slate-400 font-mono text-xs uppercase tracking-widest',
+      };
+    case 'agentic':
+      return {
+        section: 'bg-[#0a0a0f] border border-violet-500/25',
+        title: 'text-violet-100',
+        subtitle: 'text-violet-300/70',
+      };
+    default:
+      return {
+        section: 'bg-gradient-to-br from-slate-50 to-blue-50/70 border border-slate-200/70',
+        title: 'text-slate-900',
+        subtitle: 'text-slate-600',
+      };
   }
-
-  if (lens === 'engineering') {
-    return {
-      stroke: '#22d3ee',
-      strokeWidth: 0.22,
-      linecap: 'butt' as const,
-      dashArray: undefined,
-    };
-  }
-
-  return {
-    stroke: 'url(#synapse-gradient)',
-    strokeWidth: 0.42,
-    linecap: 'round' as const,
-    dashArray: '2.4 1.8',
-  };
 };
 
 export const NeuralSkillGraph = () => {
   const { lens } = useLens();
-  const [hoveredMain, setHoveredMain] = useState<MainNodeId | null>(null);
+  const isLight = lens === 'product';
+  const panelStyles = getPanelStyles(lens);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<ForceGraphMethods | undefined>(undefined);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 600 });
 
-  const mainNodeMap = useMemo(() => {
-    return MAIN_NODES.reduce<Record<MainNodeId, MainNode>>((acc, node) => {
-      acc[node.id] = node;
-      return acc;
-    }, {} as Record<MainNodeId, MainNode>);
+  useEffect(() => {
+    const element = containerRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      setDimensions({
+        width: rect.width,
+        height: rect.height,
+      });
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
-  const lineStyle = getLineStyleByLens(lens);
-
-  const getPanelStyles = () => {
-    switch (lens) {
-      case 'product':
-        return {
-          section: 'bg-gradient-to-br from-slate-50 to-blue-50/70 border border-slate-200/70',
-          title: 'text-slate-900',
-          subtitle: 'text-slate-600',
-          subNode: 'bg-white text-slate-700 border border-slate-200/80 shadow-sm',
-          canvasGlow: 'bg-blue-100/30',
-        };
-      case 'engineering':
-        return {
-          section: 'bg-slate-950 border border-slate-800',
-          title: 'text-slate-100 font-mono',
-          subtitle: 'text-slate-400 font-mono text-xs uppercase tracking-widest',
-          subNode: 'bg-slate-900 text-slate-200 border border-slate-700 font-mono',
-          canvasGlow: 'bg-cyan-500/10',
-        };
-      case 'agentic':
-        return {
-          section: 'bg-[#0a0a0f] border border-violet-500/25',
-          title: 'text-violet-100',
-          subtitle: 'text-violet-300/70',
-          subNode: 'bg-violet-900/25 text-violet-100 border border-violet-400/40 shadow-[0_0_14px_rgba(168,85,247,0.45)]',
-          canvasGlow: 'bg-violet-500/10',
-        };
-      default:
-        return {
-          section: 'bg-gradient-to-br from-slate-50 to-blue-50/70 border border-slate-200/70',
-          title: 'text-slate-900',
-          subtitle: 'text-slate-600',
-          subNode: 'bg-white text-slate-700 border border-slate-200/80 shadow-sm',
-          canvasGlow: 'bg-blue-100/30',
-        };
+  useEffect(() => {
+    if (!fgRef.current) {
+      return;
     }
-  };
 
-  const panelStyles = getPanelStyles();
+    const d3Graph = fgRef.current.d3Force.bind(fgRef.current);
+
+    d3Graph('charge', d3.forceManyBody().strength(-300));
+
+    d3Graph(
+      'collide',
+      d3.forceCollide().radius((node: SimulationNodeDatum) => {
+        const graphNode = node as NodeObject<GraphNode>;
+        return graphNode.id === 'Me' ? 20 : 10;
+      }),
+    );
+
+    d3Graph(
+      'radial',
+      d3.forceRadial((node: SimulationNodeDatum) => {
+        const graphNode = node as NodeObject<GraphNode>;
+        if (graphNode.id === 'Me') {
+          return 0;
+        }
+
+        if (graphNode.group && graphNode.group >= 1 && graphNode.group <= 4 && graphNode.name) {
+          return 80;
+        }
+
+        return 160;
+      }).strength(0.8),
+    );
+
+    const linkForce = d3Graph('link');
+    if (linkForce && 'distance' in linkForce && typeof linkForce.distance === 'function') {
+      linkForce.distance((link: { source?: { id?: string } | string; target?: { id?: string } | string }) => {
+        const sourceId =
+          typeof link.source === 'object' && link.source !== null
+            ? String(link.source.id ?? '')
+            : String(link.source ?? '');
+        const targetId =
+          typeof link.target === 'object' && link.target !== null
+            ? String(link.target.id ?? '')
+            : String(link.target ?? '');
+
+        if (sourceId === 'Me' || targetId === 'Me') {
+          return 80;
+        }
+
+        return 80;
+      });
+    }
+
+    fgRef.current.d3ReheatSimulation();
+  }, []);
 
   return (
     <section className={`px-6 py-16 rounded-2xl ${panelStyles.section}`}>
@@ -172,174 +227,74 @@ export const NeuralSkillGraph = () => {
           </p>
         </div>
 
-        <div className="relative mx-auto w-full max-w-5xl aspect-[10/7] overflow-hidden rounded-2xl">
-          <div className={`absolute inset-0 ${panelStyles.canvasGlow}`} />
+        <div
+          ref={containerRef}
+          className={`w-full h-[600px] rounded-xl overflow-hidden relative cursor-grab active:cursor-grabbing backdrop-blur-md ${
+            isLight ? 'border border-slate-300/70 bg-white/45' : 'border border-purple-500/20 bg-black/40'
+          }`}
+        >
+          <div
+            className={`pointer-events-none absolute inset-0 ${
+              isLight
+                ? 'bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.14),transparent_45%),radial-gradient(circle_at_80%_80%,rgba(148,163,184,0.16),transparent_45%)]'
+                : 'bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.2),transparent_45%),radial-gradient(circle_at_80%_80%,rgba(6,182,212,0.16),transparent_45%)]'
+            }`}
+          />
 
-          <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
-            <defs>
-              <linearGradient id="synapse-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.2" />
-                <stop offset="50%" stopColor="#e879f9" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.2" />
-              </linearGradient>
-            </defs>
+          {dimensions.width > 0 && (
+            <ForceGraph2D
+              ref={fgRef}
+              graphData={graphData}
+              width={dimensions.width}
+              height={dimensions.height}
+              backgroundColor="rgba(0,0,0,0)"
+              nodeRelSize={4}
+              nodeVal="val"
+              nodeColor={(node) => {
+                const graphNode = node as NodeObject<GraphNode>;
+                return groupColor[graphNode.group ?? 1] ?? '#a855f7';
+              }}
+              linkColor={() => (isLight ? 'rgba(148, 163, 184, 0.4)' : 'rgba(168, 85, 247, 0.3)')}
+              linkWidth={1.5}
+              linkDirectionalParticles={2}
+              linkDirectionalParticleSpeed={0.005}
+              linkDirectionalParticleWidth={2}
+              linkDirectionalParticleColor={() => (isLight ? '#3b82f6' : '#a855f7')}
+              cooldownTicks={120}
+              onEngineStop={() => {
+                fgRef.current?.zoomToFit(700, 90);
+              }}
+              nodeCanvasObjectMode={() => 'replace'}
+              nodeCanvasObject={(node, ctx, globalScale) => {
+                const graphNode = node as NodeObject<GraphNode> & { color?: string };
+                const label = graphNode.name || graphNode.id;
+                const nodeX = graphNode.x ?? 0;
+                const nodeY = graphNode.y ?? 0;
+                const fontSize = (graphNode.id === 'Me' ? 14 : 10) / globalScale;
+                ctx.font = `700 ${fontSize}px Sans-Serif`;
+                const nodeRadius = graphNode.id === 'Me' ? 8 : 4;
 
-            {SUB_NODES.map((subNode, index) => {
-              const parent = mainNodeMap[subNode.parentId];
-              const isDimmed =
-                hoveredMain !== null &&
-                hoveredMain !== subNode.parentId;
+                ctx.beginPath();
+                ctx.arc(nodeX, nodeY, nodeRadius, 0, 2 * Math.PI, false);
+                ctx.fillStyle = graphNode.color || (isLight ? '#3b82f6' : '#06b6d4');
+                ctx.fill();
 
-              return (
-                <motion.line
-                  key={`${subNode.id}-line`}
-                  x1={parent.x}
-                  y1={parent.y}
-                  x2={subNode.x}
-                  y2={subNode.y}
-                  stroke={lineStyle.stroke}
-                  strokeWidth={lineStyle.strokeWidth}
-                  strokeLinecap={lineStyle.linecap}
-                  strokeDasharray={lineStyle.dashArray}
-                  initial={{ opacity: 0 }}
-                  animate={{
-                    opacity: isDimmed ? 0.12 : lens === 'agentic' ? [0.35, 0.95, 0.35] : 0.55,
-                    strokeDashoffset: lens === 'agentic' ? [0, -16] : 0,
-                  }}
-                  transition={{
-                    opacity:
-                      lens === 'agentic'
-                        ? {
-                            duration: 2.4,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                            delay: index * 0.08,
-                          }
-                        : { duration: 0.2 },
-                    strokeDashoffset:
-                      lens === 'agentic'
-                        ? {
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: 'linear',
-                            delay: index * 0.05,
-                          }
-                        : { duration: 0 },
-                  }}
-                />
-              );
-            })}
-          </svg>
+                const angle = Math.atan2(nodeY, nodeX);
+                const textDistance = nodeRadius + 6 / globalScale;
+                const textX = nodeX + Math.cos(angle) * textDistance;
+                const textY = nodeY + Math.sin(angle) * textDistance;
 
-          {SUB_NODES.map((subNode, index) => {
-            const isDimmed =
-              hoveredMain !== null &&
-              hoveredMain !== subNode.parentId;
-            const isFocusedParent = hoveredMain === subNode.parentId;
+                ctx.textAlign = Math.abs(angle) > Math.PI / 2 ? 'right' : 'left';
+                ctx.textBaseline = 'middle';
+                ctx.lineWidth = 3 / globalScale;
+                ctx.strokeStyle = isLight ? 'rgba(248, 250, 252, 0.9)' : 'rgba(2, 6, 23, 0.9)';
+                ctx.strokeText(String(label), textX, textY);
 
-            return (
-              <motion.div
-                key={subNode.id}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-[11px] md:text-xs backdrop-blur-sm ${panelStyles.subNode}`}
-                style={{ left: `${subNode.x}%`, top: `${subNode.y}%` }}
-                animate={{
-                  y: [0, -6, 0],
-                  opacity: isDimmed ? 0.22 : 1,
-                  scale: isFocusedParent ? 1.08 : 1,
-                }}
-                transition={{
-                  y: {
-                    duration: 4.2 + (index % 5) * 0.35,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: index * 0.1,
-                  },
-                  opacity: { duration: 0.22 },
-                  scale: { duration: 0.22 },
-                }}
-              >
-                {subNode.label}
-              </motion.div>
-            );
-          })}
-
-          {MAIN_NODES.map((mainNode, index) => {
-            const isHovered = hoveredMain === mainNode.id;
-            const isDimmed =
-              hoveredMain !== null &&
-              hoveredMain !== mainNode.id;
-
-            const baseMainNodeClass =
-              lens === 'product'
-                ? `${productNodeColors[mainNode.id]} text-white shadow-[0_14px_26px_rgba(15,23,42,0.24)]`
-                : lens === 'engineering'
-                ? `bg-slate-950 border ${engineeringNodeColors[mainNode.id]}`
-                : `${agenticNodeColors[mainNode.id]} border`;
-
-            return (
-              <motion.div
-                key={mainNode.id}
-                className="absolute -translate-x-1/2 -translate-y-1/2"
-                style={{ left: `${mainNode.x}%`, top: `${mainNode.y}%` }}
-                onMouseEnter={() => setHoveredMain(mainNode.id)}
-                onMouseLeave={() => setHoveredMain(null)}
-                animate={{
-                  y: [0, -10, 0],
-                  scale: isHovered ? 1.5 : hoveredMain ? 0.94 : 1,
-                  opacity: isDimmed ? 0.24 : 1,
-                }}
-                transition={{
-                  y: {
-                    duration: 4.8 + index * 0.5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: index * 0.2,
-                  },
-                  scale: { duration: 0.24, ease: 'easeOut' },
-                  opacity: { duration: 0.24, ease: 'easeOut' },
-                }}
-              >
-                <div
-                  className={`h-28 w-28 md:h-32 md:w-32 cursor-pointer select-none rounded-full px-3 text-center text-xs md:text-sm font-semibold flex items-center justify-center backdrop-blur-sm ${baseMainNodeClass}`}
-                  style={
-                    lens === 'engineering'
-                      ? {
-                          clipPath:
-                            'polygon(25% 7%, 75% 7%, 100% 50%, 75% 93%, 25% 93%, 0% 50%)',
-                        }
-                      : undefined
-                  }
-                >
-                  <span className="leading-tight">{mainNode.label}</span>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          <AnimatePresence>
-            {hoveredMain && (
-              <motion.div
-                key={hoveredMain}
-                className={`absolute z-20 -translate-x-1/2 rounded-lg px-3 py-2 text-xs md:text-sm max-w-60 backdrop-blur-md ${
-                  lens === 'engineering'
-                    ? 'bg-slate-900 text-slate-100 border border-cyan-500/60 font-mono'
-                    : lens === 'agentic'
-                    ? 'bg-violet-900/70 text-violet-100 border border-violet-400/50'
-                    : 'bg-white/90 text-slate-700 border border-slate-200'
-                }`}
-                style={{
-                  left: `${mainNodeMap[hoveredMain].x}%`,
-                  top: `calc(${mainNodeMap[hoveredMain].y}% - 90px)`,
-                }}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.18 }}
-              >
-                {mainNodeMap[hoveredMain].tooltip}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+                ctx.fillText(String(label), textX, textY);
+              }}
+            />
+          )}
         </div>
       </div>
     </section>

@@ -14,6 +14,14 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProps) => {
   const { lens } = useLens();
   const lensContent = project.content[lens];
+  const descriptionText =
+    lens === 'agentic'
+      ? project.content.agentic.coreLogic
+      : lensContent.headline;
+  const statText =
+    lens === 'agentic'
+      ? project.content.agentic.paradigm
+      : `${lensContent.headline?.[0] || 'View'}`;
 
   return (
     <motion.div
@@ -50,11 +58,11 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
           {lensContent.headline}
         </h4>
         <p className="text-white/70 mb-4 leading-relaxed">
-          {'description' in lensContent ? lensContent.description : lensContent.headline}
+          {descriptionText}
         </p>
         <div className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30">
           <p className="text-sm font-semibold text-blue-300">
-            {'stat' in lensContent ? lensContent.stat : `${lensContent.headline?.[0] || 'View'}`}
+            {statText}
           </p>
         </div>
       </motion.div>

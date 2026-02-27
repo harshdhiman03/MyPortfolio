@@ -53,38 +53,14 @@ export const ChatWidget = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      let assistantMessage = '';
-      
-      // Add placeholder message for streaming
+      const data = await response.json();
+      const assistantMessage =
+        typeof data?.message === 'string' ? data.message : 'No response generated.';
+
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '' },
+        { role: 'assistant', content: assistantMessage },
       ]);
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          assistantMessage += chunk;
-
-          // Update the last message with streamed content
-          setMessages((prev) => {
-            const updated = [...prev];
-            if (updated[updated.length - 1].role === 'assistant') {
-              updated[updated.length - 1] = {
-                role: 'assistant',
-                content: assistantMessage,
-              };
-            }
-            return updated;
-          });
-        }
-      }
     } catch (error) {
       console.error('Chat error:', error);
       setMessages((prev) => [

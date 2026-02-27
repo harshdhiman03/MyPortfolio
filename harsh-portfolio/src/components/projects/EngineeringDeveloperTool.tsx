@@ -196,12 +196,12 @@ export const EngineeringDeveloperTool = ({ project }: { project: Project }) => {
       </motion.div>
 
       {/* Core Implementation */}
-      <motion.div variants={itemVariants}>
+      {/* <motion.div variants={itemVariants}>
         <p className="text-cyan-400 text-xs uppercase tracking-widest mb-3 font-bold"> CORE_IMPLEMENTATION</p>
         <pre className="bg-[#0d1117] border border-slate-800 rounded-md p-4 overflow-x-auto">
           <code className="text-emerald-400 text-xs leading-relaxed">{content.coreSnippet}</code>
         </pre>
-      </motion.div>
+      </motion.div> */}
 
       {/* Tech Stack */}
       <motion.div variants={itemVariants}>

@@ -1,6 +1,5 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, tool } from 'ai';
-import { z } from 'zod';
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
 // System prompt with context about Harsh Dhiman
 const SYSTEM_PROMPT = `You are the AI Digital Twin of Harsh Dhiman.
@@ -29,92 +28,128 @@ BEHAVIORAL RULES:
 - If asked about "Experience", prioritize the Infosys Full-Time role.
 - If asked about "AI", prioritize the Transformer from Scratch and FoodOptima.
 - If asked about "Full Stack", prioritize Runic Realm and the Infosys Internal Tool.
-- Keep answers under 3 sentences unless asked for a "Deep Dive".`
+- Keep answers under 3 sentences unless asked for a "Deep Dive".
+
+CRITICAL TOOL USAGE RULES:
+- ONLY trigger the switchLens tool if the user EXPLICITLY asks to change the website's view, theme, or lens (e.g., "switch to agentic mode", "show me the engineering view", "change to product lens").
+- DO NOT trigger the tool if the user asks about my work, projects, or experience (e.g., "Tell me about Infosys", "What did you do at HackIndia?").
+- If the user asks about my experience, answer them conversationally in text using your provided knowledge base.`
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
     // Validate messages
     if (!messages || !Array.isArray(messages)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid messages format' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      return NextResponse.json(
+        { error: 'Invalid messages format' },
+        { status: 400 }
       );
     }
 
-    // Define the switchLens tool
-    const switchLensTool = tool({
-      description: 'Switches the portfolio view to a specific lens perspective. Use this when the user asks to see a specific lens or when you want to highlight a particular perspective (Product, Engineering, or Agentic).',
-      inputSchema: z.object({
-        lens: z
-          .enum(['product', 'engineering', 'agentic'])
-          .describe(
-            'The lens perspective to switch to: "product" for business/user perspective, "engineering" for technical perspective, or "agentic" for AI/automation perspective'
-          ),
-      }),
-      execute: async ({ lens }) => {
-        // Return success message - the actual lens switching happens on the client
-        return {
-          success: true,
-          message: `Switched to ${lens} lens`,
-          lens,
-        };
-      },
-    });
-
-    // Determine which model to use: Groq (cloud) or Ollama (local)
-    let model;
-    
-    if (process.env.GROQ_API_KEY) {
-      // Use Groq API (Cloud - Free, Fast)
-      const groq = createOpenAI({
-        baseURL: 'https://api.groq.com/openai/v1',
-        apiKey: process.env.GROQ_API_KEY,
-      });
-      model = groq('llama3-8b-8192');
-      console.log('✅ Using Groq (Cloud) for AI responses');
-    } else if (process.env.OLLAMA_BASE_URL) {
-      // Use Ollama with custom base URL
-      const ollama = createOpenAI({
-        baseURL: process.env.OLLAMA_BASE_URL,
-        apiKey: 'ollama',
-      });
-      model = ollama(process.env.OLLAMA_MODEL || 'llama2');
-      console.log('✅ Using Ollama (Local) for AI responses');
-    } else {
-      // Fallback to Ollama with default local URL
-      const ollama = createOpenAI({
-        baseURL: 'http://127.0.0.1:11434/v1',
-        apiKey: 'ollama',
-      });
-      model = ollama('llama2');
-      console.log('⚠️ Using Ollama (Local) - ensure Ollama service is running on http://127.0.0.1:11434');
+    const groqApiKey = process.env.GROQ_API_KEY;
+    if (!groqApiKey) {
+      return NextResponse.json(
+        { error: 'Missing GROQ_API_KEY in environment' },
+        { status: 500 }
+      );
     }
 
-    // Use streamText from Vercel AI SDK
-    const result = streamText({
-      model: model,
-      system: SYSTEM_PROMPT,
-      tools: {
-        switchLens: switchLensTool,
-      },
-      messages: messages.map((msg: any) => ({
-        role: msg.role,
-        content: msg.content,
-      })),
-      temperature: 0.7,
+    const groq = new OpenAI({
+      baseURL: 'https://api.groq.com/openai/v1',
+      apiKey: groqApiKey,
     });
 
-    // Return the UI message stream response which includes tool calls
-    return result.toUIMessageStreamResponse();
+    let chatCompletion;
+    try {
+      chatCompletion = await groq.chat.completions.create({
+        model: process.env.GROQ_MODEL || 'llama3-8b-8192',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...messages.map((msg: any) => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+        ],
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'switchLens',
+              description:
+                'Switches the portfolio view to product, engineering, or agentic lens.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  lens: {
+                    type: 'string',
+                    enum: ['product', 'engineering', 'agentic'],
+                  },
+                },
+                required: ['lens'],
+                additionalProperties: false,
+              },
+            },
+          },
+        ],
+        tool_choice: 'auto',
+        temperature: 0.7,
+      });
+    } catch (error) {
+      console.error('=== GROQ CALL ERROR ===', error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Unknown error' },
+        { status: 500 }
+      );
+    }
+
+    console.log('=== RAW GROQ RESPONSE ===', JSON.stringify(chatCompletion, null, 2));
+
+    const aiMessage = chatCompletion.choices[0]?.message;
+    if (!aiMessage) {
+      console.error('=== AI MESSAGE UNDEFINED ===', chatCompletion.choices[0]);
+      return NextResponse.json({
+        message: "I couldn't process that request.",
+      });
+    }
+
+    // Check if the AI decided to call a tool
+    if (aiMessage.tool_calls && aiMessage.tool_calls.length > 0) {
+      const toolCall = aiMessage.tool_calls[0];
+
+      if (toolCall.type === 'function' && toolCall.function.name === 'switchLens') {
+        try {
+          const args = JSON.parse(toolCall.function.arguments);
+          if (
+            args?.lens === 'product' ||
+            args?.lens === 'engineering' ||
+            args?.lens === 'agentic'
+          ) {
+            const textResponse =
+              aiMessage.content || `Switching to ${args.lens} lens now.`;
+            return NextResponse.json({
+              message: textResponse,
+              action: {
+                type: 'switchLens',
+                payload: args.lens,
+              },
+            });
+          }
+        } catch (error) {
+          console.error('=== TOOL ARG PARSE ERROR ===', error);
+        }
+      }
+    }
+
+    // Fallback: If it's just normal text conversation
+    return NextResponse.json({
+      message: aiMessage.content || "I couldn't process that request.",
+    });
   } catch (error) {
     console.error('Chat API Error:', error);
-    return new Response(
-      JSON.stringify({
-        error: 'Failed to process chat request',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
     );
   }
 }
+

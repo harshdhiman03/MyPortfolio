@@ -126,7 +126,7 @@ export const AboutHero = () => {
 >
               {/* Video */}
               <video
-                src="/hdvid.webm"
+                src="/hdvid2.webm"
                 autoPlay
                 loop
                 muted
