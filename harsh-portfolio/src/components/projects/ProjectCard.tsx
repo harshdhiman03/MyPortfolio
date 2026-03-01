@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Transition } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
 import type { Project } from '@/lib/data';
 
@@ -18,64 +18,59 @@ const LENS_TECH_MAP: Record<string, string[]> = {
   agentic: ['T5 Transformer', 'Automation', 'Smart Contracts', 'Bot-resistant'],
 };
 
-// Mock code snippets for engineering lens
-const CODE_SNIPPETS: Record<string, string> = {
-  infosys: `// Azure Cloud Pipeline
-async function processPipeline(data) {
-  const result = await databricks.execute(data);
-  return await azureBlob.store(result);
-}`,
-  foodoptima: `# EfficientNetB0 Pipeline
-model = EfficientNetB0(weights='imagenet')
-predictions = model.predict(image)
-return streamlit.write(predictions)`,
-  'runic-realm': `// Smart Contract Interaction
-const contract = new ethers.Contract(
-  ADDRESS, ABI, signer
-);
-await contract.recordSession(sessionId);`,
+const thumbnailVariants = {
+  product: {
+    rest: { filter: 'saturate(0.95) brightness(0.95)', scale: 1 },
+    hover: {
+      scale: 1.05,
+      filter: 'saturate(1.1) brightness(1.05)',
+      boxShadow: '0px 15px 30px rgba(0,0,0,0.1)',
+    },
+  },
+  engineering: {
+    rest: {
+      filter: 'contrast(120%) saturate(0%) brightness(0.6) sepia(100%) hue-rotate(190deg)',
+      scale: 1,
+    },
+    hover: {
+      scale: 1.03,
+      filter: 'contrast(105%) saturate(100%) brightness(1) sepia(0%) hue-rotate(0deg)',
+      borderColor: 'rgba(56, 189, 248, 0.8)',
+    },
+  },
+  agentic: {
+    rest: {
+      filter: 'contrast(130%) saturate(130%) hue-rotate(-25deg) brightness(0.8)',
+      scale: 1,
+    },
+    hover: {
+      scale: 1.05,
+      filter: 'contrast(140%) saturate(150%) hue-rotate(0deg) brightness(1.1)',
+      boxShadow: '0px 0px 30px rgba(168,85,247,0.5)',
+    },
+  },
 };
-
-// Mock chat bubbles for agentic lens
-const THOUGHT_PROCESS: Record<string, string[]> = {
-  infosys: [
-    'Analyzing workflow bottlenecks...',
-    'Optimizing process logic...',
-    'Deploying automation...',
-    '✓ 36% improvement achieved',
-  ],
-  foodoptima: [
-    'Scanning food waste patterns...',
-    'Fine-tuning T5 model...',
-    'Generating recommendations...',
-    '✓ Recommendations ready',
-  ],
-  'runic-realm': [
-    'Analyzing player behavior...',
-    'Detecting anomalies...',
-    'Securing session...',
-    '✓ Session protected',
-  ],
+const thumbnailTransitions: Record<'product' | 'engineering' | 'agentic', Transition> = {
+  product: { duration: 0.4, ease: 'easeOut' },
+  engineering: { duration: 0.3, ease: 'circOut' },
+  agentic: { type: 'spring', stiffness: 300, damping: 15 },
 };
-
 export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProps) => {
   const { lens } = useLens();
-  const lensContent = project.content[lens];
+  const lensContent = project.content[lens]!;
   const descriptionText =
     lens === 'product'
       ? project.content.product.painPoint
       : lens === 'agentic'
-      ? project.content.agentic.coreLogic
+      ? project.content.agentic!.coreLogic
       : 'A groundbreaking project';
   const statText =
     lens === 'product'
       ? project.content.product.keyAchievements?.[0]?.value || 'View More'
       : lens === 'agentic'
-      ? project.content.agentic.paradigm
+      ? project.content.agentic!.paradigm
       : 'Explore';
   const relevantTechs = LENS_TECH_MAP[lens] || [];
-  const codeSnippet = CODE_SNIPPETS[project.id] || '';
-  const thoughts = THOUGHT_PROCESS[project.id] || [];
 
   return (
     <motion.div
@@ -101,154 +96,20 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
           : {}
       }
     >
-      {/* Visual Section (changes based on lens) */}
-      <div
-        className={`relative overflow-hidden ${
-          lens === 'product'
-            ? 'h-80 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 border-b border-gray-200'
-            : lens === 'engineering'
-            ? 'h-64 bg-slate-800/50 border-b border-slate-800 relative'
-            : 'h-64 bg-gradient-to-br from-violet-900/40 via-[#0a0a0f] to-violet-900/40 border-b border-violet-500/20 relative'
-        }`}
+      <motion.div
+        className="relative w-full aspect-video overflow-hidden rounded-t-2xl bg-slate-100 border-b border-slate-200/50"
+        initial="rest"
+        whileHover="hover"
+        animate="rest"
       >
-        {/* Engineering: Grid pattern background */}
-        {lens === 'engineering' && (
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(6, 182, 212, 0.3) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: '40px 40px',
-            }}
-          />
-        )}
-
-        {/* Agentic: Floating orbs and lines */}
-        {lens === 'agentic' && (
-          <>
-            {/* Animated floating orbs */}
-            <motion.div
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-4 right-6 w-20 h-20 rounded-full bg-gradient-to-r from-violet-500 to-pink-500 blur-2xl"
-            />
-            <motion.div
-              animate={{
-                y: [0, 10, 0],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              className="absolute bottom-4 left-6 w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 blur-2xl"
-            />
-            {/* Grid lines */}
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(168, 85, 247, 0.3) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(168, 85, 247, 0.3) 1px, transparent 1px)
-                `,
-                backgroundSize: '50px 50px',
-              }}
-            />
-          </>
-        )}
-
-        <AnimatePresence mode="wait">
-          {lens === 'product' && (
-            <motion.div
-              key="product-visual"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className="absolute inset-0 flex items-center justify-center p-8"
-            >
-              {/* Product: Clean, minimalist UI showcase */}
-              <div className="flex flex-col items-center gap-6 text-center">
-                <div className="relative">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-full blur-xl opacity-20"
-                  />
-                  <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-200 flex items-center justify-center shadow-sm">
-                    <span className="text-4xl">✨</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-xl font-semibold text-slate-900 tracking-tight">
-                    {project.title}
-                  </h4>
-                  <p className="text-sm text-slate-500 mt-2 font-medium">
-                    Polished Product Experience
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {lens === 'engineering' && (
-            <motion.div
-              key="engineering-visual"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 flex items-center justify-center p-4"
-            >
-              {/* Engineering: Code snippet with syntax highlighting feel */}
-              <div className="w-full h-full bg-slate-900/70 rounded-none border-none p-4 overflow-hidden flex flex-col justify-center relative">
-                {/* Line numbers */}
-                <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800/50 border-r border-slate-700 flex flex-col items-center justify-start pt-4 text-xs text-slate-500/50 font-mono">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <div key={n} className="h-6">
-                      {n}
-                    </div>
-                  ))}
-                </div>
-                <pre className="text-xs text-cyan-400 font-mono whitespace-pre-wrap overflow-hidden pl-2 leading-6">
-                  {codeSnippet}
-                </pre>
-              </div>
-            </motion.div>
-          )}
-
-          {lens === 'agentic' && (
-            <motion.div
-              key="agentic-visual"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="absolute inset-0 flex flex-col items-start justify-center p-6 gap-3"
-            >
-              {/* Agentic: Thought process bubbles with neon glow */}
-              {thoughts.map((thought, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`max-w-xs px-4 py-2 rounded-lg text-sm font-mono backdrop-blur-md ${
-                    thought.includes('✓')
-                      ? 'bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 shadow-lg shadow-emerald-500/30'
-                      : 'bg-violet-500/20 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/30'
-                  }`}
-                >
-                  {thought}
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
+        <motion.img
+          src={project.img || '/fallback-image.jpg'}
+          alt={`${project.title} thumbnail`}
+          className="w-full h-full object-cover"
+          variants={thumbnailVariants[lens]}
+          transition={thumbnailTransitions[lens]}
+        />
+      </motion.div>
       {/* Content Section */}
       <div
         className={`${
@@ -456,3 +317,4 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
     </motion.div>
   );
 };
+

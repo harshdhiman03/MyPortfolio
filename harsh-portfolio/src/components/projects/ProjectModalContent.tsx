@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { X, Lightbulb } from 'lucide-react';
 import { useLens } from '@/context/LensContext';
 import { EngineeringDeveloperTool } from './EngineeringDeveloperTool';
@@ -30,6 +30,44 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: { duration: 0.5 },
+  },
+};
+
+const heroVariants: Record<'product' | 'engineering' | 'agentic', Variants> = {
+  product: {
+    initial: { filter: 'saturate(0.8) brightness(0.8)', scale: 1.05, opacity: 0 },
+    animate: {
+      filter: 'saturate(1) brightness(1)',
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'easeOut' as const },
+    },
+  },
+  engineering: {
+    initial: {
+      filter: 'contrast(120%) saturate(0%) brightness(0.6) sepia(100%) hue-rotate(190deg)',
+      scale: 1.05,
+      opacity: 0,
+    },
+    animate: {
+      filter: 'contrast(110%) saturate(20%) brightness(0.9) sepia(80%) hue-rotate(190deg)',
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'circOut' as const },
+    },
+  },
+  agentic: {
+    initial: {
+      filter: 'contrast(150%) saturate(150%) hue-rotate(-25deg) brightness(0.8)',
+      scale: 1.05,
+      opacity: 0,
+    },
+    animate: {
+      filter: 'contrast(120%) saturate(120%) hue-rotate(0deg) brightness(1)',
+      scale: 1,
+      opacity: 1,
+      transition: { duration: 0.8, type: 'spring', bounce: 0.4 },
+    },
   },
 };
 
@@ -70,33 +108,6 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
       animate="visible"
       className="space-y-8"
     >
-      {/* Visual Section */}
-      <motion.div
-        variants={itemVariants}
-        className="h-64 bg-gradient-to-br from-indigo-50 via-white to-indigo-50 rounded-xl border border-slate-200 flex items-center justify-center p-8"
-      >
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div className="relative">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-indigo-400 rounded-full blur-xl opacity-20"
-            />
-            <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-100 to-indigo-50 border border-indigo-200 flex items-center justify-center shadow-sm">
-              <span className="text-4xl">✨</span>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-xl font-semibold text-slate-900 tracking-tight">
-              {project.title}
-            </h4>
-            <p className="text-sm text-slate-500 mt-2 font-medium">
-              Polished Product Experience
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Headline */}
       <motion.div variants={itemVariants}>
         <h2 className="text-4xl font-bold text-slate-900 mb-2 tracking-tight">
@@ -208,7 +219,7 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
 };
 
 const AgenticExecutionTrace = ({ project }: { project: Project }) => {
-  const content = project.content.agentic;
+  const content = project.content.agentic!;
 
   return (
     <motion.div
@@ -410,6 +421,26 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
 
               {/* Modal Content */}
               <div className={`relative z-10 ${lens === 'engineering' ? 'p-6 font-mono text-sm' : 'p-8'}`}>
+                <motion.div
+                  className={`relative overflow-hidden rounded-t-2xl h-64 sm:h-72 border-b ${
+                    lens === 'engineering'
+                      ? '-mx-6 -mt-6 mb-6 border-cyan-500/30'
+                      : lens === 'agentic'
+                      ? '-mx-8 -mt-8 mb-8 border-purple-500/30'
+                      : '-mx-8 -mt-8 mb-8 border-slate-200/60'
+                  }`}
+                >
+                  <motion.img
+                    key={`${project.id}-${lens}`}
+                    src={project.img || '/fallback-image.jpg'}
+                    alt={`${project.title} hero`}
+                    className="w-full h-full object-cover"
+                    variants={heroVariants[lens]}
+                    initial="initial"
+                    animate="animate"
+                  />
+                </motion.div>
+
                 {lens === 'product' ? (
                   <ProductCaseStudy project={project} />
                 ) : lens === 'agentic' ? (

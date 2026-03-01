@@ -616,81 +616,83 @@ export interface AgenticContent {
 export interface Project {
   id: string;
   title: string;
+  img: string;
   category: 'Professional' | 'Research' | 'Hackathon' | 'AI & Vision' | 'Web3 Gaming' | 'FinTech AI' | 'Cybersecurity' | 'Machine Learning' | 'Frontend Engineering' | 'Cloud Engineering';
   stack: string[]; 
   content: {
     product: ProductContent;
     engineering: EngineeringProjectContent;
-    agentic: AgenticContent;
+    agentic?: AgenticContent;
   };
 }
 
 export const projects: Project[] = [
-  {
-    id: "infosys-tv",
-    title: "Infosys TV Authoring Automation",
-    category: "Cloud Engineering",
-    stack: ["Azure Databricks", ".NET Core", "SQL", "Python"],
-    content: {
-      product: {
-        headline: "Enterprise Data Pipeline Automation.",
-        painPoint: "Manual data processing and legacy infrastructure for TV authoring workflows caused severe bottlenecks, leading to delayed reporting and high operational costs.",
-        targetAudience: "Enterprise data teams and internal corporate stakeholders at Infosys.",
-        ahaMoment: "Migrating legacy processes to Azure Databricks enabled automated, scalable cloud workflows that execute entirely hands-off.",
-        swot: {
-          s: "Boosted overall system efficiency and reduced process time by 36% through cloud modernization.",
-          w: "High initial migration and setup overhead for decoupling legacy systems.",
-          o: "The scalable pipeline architecture can be templated for other enterprise departments.",
-          t: "Reliance on specific cloud vendors (Azure infrastructure lock-in)."
-        },
-        keyAchievements: [
-          { label: "Process Reduction", value: "36% Faster" },
-          { label: "Infrastructure", value: "Cloud Migrated" }
-        ],
-        techStack: ["Azure Databricks", ".NET Core", "SQL", "Python"],
-      },
-      engineering: {
-        headline: "Cloud-Native Data Pipelines",
-        architecture: "Enterprise data engineering architecture orchestrating large-scale ETL jobs using Azure infrastructure and .NET Core microservices.",
-        architectureFlow: {
-          groups: [
-            { id: "azure", title: "Azure Cloud" },
-            { id: "compute", title: "Data Processing" },
-            { id: "serve", title: "Service Layer" }
-          ],
-          nodes: [
-            { id: "ingest", title: "Data Factory", tech: "ADF Pipelines", groupId: "azure" },
-            { id: "lake", title: "Raw Storage", tech: "Blob Storage", groupId: "azure" },
-            { id: "spark", title: "Databricks Jobs", tech: "PySpark", groupId: "compute" },
-            { id: "sql", title: "Serving DB", tech: "SQL Server", groupId: "serve" },
-            { id: "api", title: "API Gateway", tech: ".NET Core", groupId: "serve" }
-          ],
-          edges: [
-            { fromId: "ingest", toId: "lake", labelTop: "raw batches" },
-            { fromId: "lake", toId: "spark", labelTop: "etl trigger" },
-            { fromId: "spark", toId: "sql", labelTop: "curated tables" },
-            { fromId: "sql", toId: "api", labelTop: "query response", labelBottom: "dashboard data" }
-          ]
-        },
-        coreSnippet: "public async Task<IActionResult> TriggerEtlJob()\n{\n    var response = await _databricksClient.Jobs.RunNow(jobId);\n    return Ok(new { RunId = response.RunId });\n}",
-        techStack: ["Azure", "Databricks", ".NET Core"],
-      },
-      agentic: {
-        headline: "Automated ETL",
-        paradigm: "Autonomous ETL Orchestration",
-        reasoningTrace: [
-          { step: "01", action: "Schedule ingestion triggers across Azure data sources.", result: "Raw datasets land in cloud storage partitions." },
-          { step: "02", action: "Execute Databricks transformation and validation jobs.", result: "Curated analytical tables materialized with quality checks." },
-          { step: "03", action: "Publish serving datasets to SQL and service layer.", result: "Downstream APIs and dashboards updated with fresh data." }
-        ],
-        coreLogic: "The orchestrator continuously drives ingestion, transformation, and serving transitions with policy-based triggers, acting as a deterministic agent to reduce manual intervention and improve reliability.",
-        techStack: ["Azure Databricks", "SQL", ".NET Core", "Python"]
-      }
-    }
-  },
+  // {
+  //   id: "infosys-tv",
+  //   title: "Infosys TV Authoring Automation",
+  //   category: "Cloud Engineering",
+  //   stack: ["Azure Databricks", ".NET Core", "SQL", "Python"],
+  //   content: {
+  //     product: {
+  //       headline: "Enterprise Data Pipeline Automation.",
+  //       painPoint: "Manual data processing and legacy infrastructure for TV authoring workflows caused severe bottlenecks, leading to delayed reporting and high operational costs.",
+  //       targetAudience: "Enterprise data teams and internal corporate stakeholders at Infosys.",
+  //       ahaMoment: "Migrating legacy processes to Azure Databricks enabled automated, scalable cloud workflows that execute entirely hands-off.",
+  //       swot: {
+  //         s: "Boosted overall system efficiency and reduced process time by 36% through cloud modernization.",
+  //         w: "High initial migration and setup overhead for decoupling legacy systems.",
+  //         o: "The scalable pipeline architecture can be templated for other enterprise departments.",
+  //         t: "Reliance on specific cloud vendors (Azure infrastructure lock-in)."
+  //       },
+  //       keyAchievements: [
+  //         { label: "Process Reduction", value: "36% Faster" },
+  //         { label: "Infrastructure", value: "Cloud Migrated" }
+  //       ],
+  //       techStack: ["Azure Databricks", ".NET Core", "SQL", "Python"],
+  //     },
+  //     engineering: {
+  //       headline: "Cloud-Native Data Pipelines",
+  //       architecture: "Enterprise data engineering architecture orchestrating large-scale ETL jobs using Azure infrastructure and .NET Core microservices.",
+  //       architectureFlow: {
+  //         groups: [
+  //           { id: "azure", title: "Azure Cloud" },
+  //           { id: "compute", title: "Data Processing" },
+  //           { id: "serve", title: "Service Layer" }
+  //         ],
+  //         nodes: [
+  //           { id: "ingest", title: "Data Factory", tech: "ADF Pipelines", groupId: "azure" },
+  //           { id: "lake", title: "Raw Storage", tech: "Blob Storage", groupId: "azure" },
+  //           { id: "spark", title: "Databricks Jobs", tech: "PySpark", groupId: "compute" },
+  //           { id: "sql", title: "Serving DB", tech: "SQL Server", groupId: "serve" },
+  //           { id: "api", title: "API Gateway", tech: ".NET Core", groupId: "serve" }
+  //         ],
+  //         edges: [
+  //           { fromId: "ingest", toId: "lake", labelTop: "raw batches" },
+  //           { fromId: "lake", toId: "spark", labelTop: "etl trigger" },
+  //           { fromId: "spark", toId: "sql", labelTop: "curated tables" },
+  //           { fromId: "sql", toId: "api", labelTop: "query response", labelBottom: "dashboard data" }
+  //         ]
+  //       },
+  //       coreSnippet: "public async Task<IActionResult> TriggerEtlJob()\n{\n    var response = await _databricksClient.Jobs.RunNow(jobId);\n    return Ok(new { RunId = response.RunId });\n}",
+  //       techStack: ["Azure", "Databricks", ".NET Core"],
+  //     },
+  //     agentic: {
+  //       headline: "Automated ETL",
+  //       paradigm: "Autonomous ETL Orchestration",
+  //       reasoningTrace: [
+  //         { step: "01", action: "Schedule ingestion triggers across Azure data sources.", result: "Raw datasets land in cloud storage partitions." },
+  //         { step: "02", action: "Execute Databricks transformation and validation jobs.", result: "Curated analytical tables materialized with quality checks." },
+  //         { step: "03", action: "Publish serving datasets to SQL and service layer.", result: "Downstream APIs and dashboards updated with fresh data." }
+  //       ],
+  //       coreLogic: "The orchestrator continuously drives ingestion, transformation, and serving transitions with policy-based triggers, acting as a deterministic agent to reduce manual intervention and improve reliability.",
+  //       techStack: ["Azure Databricks", "SQL", ".NET Core", "Python"]
+  //     }
+  //   }
+  // },
   {
     id: "foodoptima",
     title: "FoodOptima",
+    img:"/img/foodoptimaimg.png",
     category: "AI & Vision",
     stack: ["EfficientNetB0", "OpenCV", "T5 Transformer", "Streamlit"],
     content: {
@@ -753,6 +755,7 @@ export const projects: Project[] = [
   {
     id: "runic-realm",
     title: "Runic Realm",
+    img:"/img/runicrealmimg.png",
     category: "Web3 Gaming",
     stack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
     content: {
@@ -811,5 +814,248 @@ export const projects: Project[] = [
         techStack: ["Solidity", "Ethers.js", "Thirdweb", "Next.js"]
       }
     },
+  },
+  {
+    id: "hacksuraksha",
+    title: "HackSuraksha",
+    img:"/img/hacksurakshaimg.png",
+    category: "Cybersecurity",
+    stack: ["Python", "BeautifulSoup", "CNN", "LSTM", "Streamlit", "Hugging Face"],
+    content: {
+      product: {
+        headline: "Fraudulent Website Detection System.",
+        painPoint: "Users are constantly exposed to sophisticated fraudulent websites that use deceptive URLs and misleading visual ad content to bypass standard security filters.",
+        targetAudience: "Everyday internet users and cybersecurity teams needing automated, high-accuracy threat detection.",
+        ahaMoment: "By combining sequential URL analysis (LSTM) with visual ad-content classification (CNN), the system creates a highly accurate, multi-modal defense against evolving fraud patterns.",
+        swot: {
+          s: "Achieves 96.8% detection accuracy by covering both content-based and visual-based fraud signals via end-to-end ML deployment.",
+          w: "Model accuracy is dependent on scraped data quality, and currently offers limited explainability for end users.",
+          o: "Can be extended into a real-time browser plugin and enhanced with Explainable AI (XAI) to build user trust.",
+          t: "Fraud patterns and adversarial website obfuscation techniques evolve rapidly, requiring constant model updates."
+        },
+        keyAchievements: [
+          { label: "Accuracy", value: "96.8%" },
+          { label: "Latency", value: "Reduced by 35%" }
+        ],
+        techStack: ["Python", "CNN", "LSTM", "Streamlit", "Hugging Face"],
+      },
+      engineering: {
+        headline: "Dual-Pipeline ML Inference Architecture",
+        architecture: "Designed a highly optimized dual-pipeline system combining BeautifulSoup for structured web scraping, LSTM for sequential URL analysis, and CNN for visual ad-content classification.",
+        architectureFlow: {
+          groups: [
+            { id: "ingest", title: "Scraping Layer" },
+            { id: "infer", title: "ML Inference" },
+            { id: "ui", title: "Deployment" }
+          ],
+          nodes: [
+            { id: "scraper", title: "BeautifulSoup Scraper", tech: "Python", groupId: "ingest" },
+            { id: "lstm", title: "URL Analyzer", tech: "LSTM", groupId: "infer" },
+            { id: "cnn", title: "Ad Visual Classifier", tech: "CNN", groupId: "infer" },
+            { id: "app", title: "Inference App", tech: "Streamlit", groupId: "ui" }
+          ],
+          edges: [
+            { fromId: "scraper", toId: "lstm", labelTop: "URL sequences" },
+            { fromId: "scraper", toId: "cnn", labelTop: "Image tensors" },
+            { fromId: "lstm", toId: "app", labelTop: "text risk score" },
+            { fromId: "cnn", toId: "app", labelBottom: "visual risk score" }
+          ]
+        },
+        coreSnippet: "def analyze_target_website(url):\n    text_data, ad_images = scraper.extract(url)\n    url_risk = lstm_model.predict(text_data)\n    visual_risk = cnn_model.predict(ad_images)\n    return ensemble_score(url_risk, visual_risk)",
+        techStack: ["Python", "BeautifulSoup", "Streamlit", "Hugging Face"],
+      },
+      agentic: {
+        headline: "Reactive Multi-Modal Inference Engine",
+        paradigm: "Deterministic ML Pipeline (Path to Agentic)",
+        reasoningTrace: [
+          { step: "01", action: "Receive target URL and scrape DOM for structured text and ad imagery.", result: "Data payloads extracted for independent pipelines." },
+          { step: "02", action: "Pass sequence data to LSTM and spatial data to CNN.", result: "Independent threat probabilities calculated." },
+          { step: "03", action: "Aggregate dual predictions to output a final 96.8% accurate verdict.", result: "Threat level surfaced rapidly to the end-user." }
+        ],
+        coreLogic: "Currently operating as a highly optimized, reactive ML system (input → predict → respond) rather than a fully autonomous agent. However, this robust dual-pipeline architecture lays the exact groundwork required for a future agentic system by enabling continuous retraining loops and automated threat-blocking workflows.",
+        techStack: ["CNN", "LSTM", "Hugging Face", "Streamlit"]
+      }
+    }
+  },
+  {
+    id: "finspire",
+    title: "FinSpire",
+    img:"/img/finspireimg.png",
+    category: "FinTech AI",
+    stack: ["Next.js", "Python", "T5 Transformer", "TradingView API", "Hugging Face"],
+    content: {
+      product: {
+        headline: "AI-Powered Financial Recommendation Web App.",
+        painPoint: "Retail investors often struggle to interpret raw, volatile financial data and complex charts, lacking access to clear, contextualized market insights.",
+        targetAudience: "Retail investors and everyday traders seeking AI-driven, plain-English market analysis.",
+        ahaMoment: "By fusing real-time TradingView market data with a T5 Transformer fine-tuned on 68,000 financial records, the system translates complex market conditions into actionable, personalized recommendations.",
+        swot: {
+          s: "Leverages a Transformer-based NLP (T5) model with a clean architectural separation between the Next.js frontend and ML backend.",
+          w: "NLP recommendations are probabilistic (not deterministic), and heavily depend on the freshness and quality of the ingested financial data.",
+          o: "Massive scope to evolve into a fully personalized financial assistant via feedback-driven improvement loops.",
+          t: "Extreme financial data volatility and strict regulatory/compliance constraints inherent to the FinTech sector."
+        },
+        keyAchievements: [
+          { label: "Training Data", value: "68,000 Records" },
+          { label: "Integration", value: "Live TradingView" }
+        ],
+        techStack: ["Next.js", "T5 Transformer", "TradingView API", "Python"],
+      },
+      engineering: {
+        headline: "REST-Driven NLP & SSR Architecture",
+        architecture: "Designed with a strict separation of concerns: a performant Next.js frontend utilizing Server-Side Rendering (SSR) communicates via REST APIs to a Python-based ML backend optimized for inference latency.",
+        architectureFlow: {
+          groups: [
+            { id: "client", title: "Frontend UI" },
+            { id: "api", title: "REST Gateway" },
+            { id: "ml", title: "ML Backend" }
+          ],
+          nodes: [
+            { id: "ui", title: "Next.js App", tech: "SSR & React", groupId: "client" },
+            { id: "charts", title: "Market Charts", tech: "TradingView", groupId: "client" },
+            { id: "gateway", title: "REST API", tech: "Next.js API Routes", groupId: "api" },
+            { id: "inference", title: "T5 Inference Engine", tech: "Python / FastAPI", groupId: "ml" }
+          ],
+          edges: [
+            { fromId: "ui", toId: "charts", labelTop: "render live data" },
+            { fromId: "ui", toId: "gateway", labelTop: "user query + context" },
+            { fromId: "gateway", toId: "inference", labelTop: "REST payload" },
+            { fromId: "inference", toId: "gateway", labelBottom: "probabilistic insight" }
+          ]
+        },
+        coreSnippet: "export async function fetchFinancialInsight(query: string, chartData: any) {\n  const response = await fetch('/api/recommendations', {\n    method: 'POST',\n    body: JSON.stringify({ query, context: chartData })\n  });\n  return response.json();\n}",
+        techStack: ["Next.js", "Python", "REST APIs", "Hugging Face"],
+      },
+      agentic: {
+        headline: "Semi-Agentic Contextual Generator",
+        paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
+        reasoningTrace: [
+          { step: "01", action: "Accept natural language user query alongside current financial state context.", result: "Structured prompt formatted for NLP inference." },
+          { step: "02", action: "Process prompt through fine-tuned T5 Transformer model.", result: "Domain-specific semantic weights applied to query." },
+          { step: "03", action: "Generate context-aware financial recommendation.", result: "Probabilistic text insight returned to the user." }
+        ],
+        coreLogic: "This is intentionally designed as a semi-agentic system: it accepts queries and generates context-aware responses, but lacks autonomous goal planning or memory persistence. However, the architecture is primed to become fully agentic by introducing user feedback loops and external tool calling (e.g., executing trades via portfolio APIs).",
+        techStack: ["T5 Transformer", "Hugging Face", "Python"]
+      }
+    }
+  },
+  {
+    id: "internal-comm-tool",
+    title: "Internal Communication Tool",
+    img:"/img/internalcommimg.png",
+    category: "Frontend Engineering",
+    stack: ["React", "Node.js", "MongoDB", "Tailwind CSS", "JWT"],
+    content: {
+      product: {
+        headline: "Streamlined Organizational Communication.",
+        painPoint: "Internal teams spend too much time recreating emails and communications from scratch, leading to inconsistent branding and wasted effort.",
+        targetAudience: "Internal organizational staff and corporate communications teams.",
+        ahaMoment: "By building an interactive design toolbar with reusable JSX templates, non-technical staff can rapidly assemble and deploy secure internal communications.",
+        swot: {
+          s: "Highly modular React architecture with reusable templates and secure JWT-based authentication.",
+          w: "Internal-only scope means feature expansion relies heavily on internal organizational needs rather than market demands.",
+          o: "Can easily be scaled into broader workflow automation tools, incorporating analytics and role-based dashboards.",
+          t: "Security and access misconfiguration risks, along with the standard threat of slow internal adoption."
+        },
+        keyAchievements: [
+          { label: "Creation Time", value: "-60%" },
+          { label: "User Engagement", value: "+35%" }
+        ],
+        techStack: ["React", "Node.js", "MongoDB", "Tailwind CSS", "JWT"],
+      },
+      engineering: {
+        headline: "Secure MERN Stack Architecture",
+        architecture: "A decoupled full-stack architecture featuring a React SPA with a custom interactive design toolbar, communicating securely via JWT to a Node.js/Express backend backed by MongoDB.",
+        architectureFlow: {
+          groups: [
+            { id: "frontend", title: "Client UI" },
+            { id: "backend", title: "API Gateway" },
+            { id: "database", title: "Persistence" }
+          ],
+          nodes: [
+            { id: "ui", title: "React SPA", tech: "Tailwind CSS", groupId: "frontend" },
+            { id: "toolbar", title: "Design Toolbar", tech: "JSX Templates", groupId: "frontend" },
+            { id: "auth", title: "JWT Middleware", tech: "Node.js", groupId: "backend" },
+            { id: "api", title: "Express Server", tech: "REST API", groupId: "backend" },
+            { id: "db", title: "Document Store", tech: "MongoDB", groupId: "database" }
+          ],
+          edges: [
+            { fromId: "toolbar", toId: "ui", labelTop: "component state" },
+            { fromId: "ui", toId: "auth", labelTop: "JWT token" },
+            { fromId: "auth", toId: "api", labelTop: "validated request" },
+            { fromId: "api", toId: "db", labelTop: "CRUD operations", labelBottom: "JSON payload" }
+          ]
+        },
+        coreSnippet: "const verifyToken = (req, res, next) => {\n  const token = req.header('Authorization');\n  if (!token) return res.status(401).json({ error: 'Access denied' });\n  try {\n    const verified = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = verified;\n    next();\n  } catch (err) {\n    res.status(400).json({ error: 'Invalid token' });\n  }\n};",
+        techStack: ["React", "Node.js", "MongoDB", "Express", "JWT"],
+      }
+      // Notice: No 'agentic' block here!
+    }
+  },
+  {
+    id: "neural-translator",
+    title: "Language Translation – English to French",
+    img:"/img/languagetranslateimg.png",
+    category: "Machine Learning",
+    stack: ["Python", "TensorFlow", "Transformer", "Deep Learning"],
+    content: {
+      product: {
+        headline: "Custom Transformer for High-Accuracy Translation.",
+        painPoint: "Relying purely on black-box commercial APIs prevents deep architectural understanding and limits the ability to build fully custom, offline NLP pipelines.",
+        targetAudience: "AI researchers and enterprise teams requiring custom, on-premise language models.",
+        ahaMoment: "By engineering the Transformer architecture entirely from scratch—including custom attention mechanisms and positional encoding—the model achieved a highly precise 98% translation accuracy.",
+        swot: {
+          s: "Built the entire Transformer architecture from scratch, demonstrating a profound understanding of encoder-decoder mechanics and achieving 0.98 accuracy.",
+          w: "Computationally expensive to train and currently limited to a single language pair (English to French).",
+          o: "Can be extended to multilingual translation architectures or adapted to fine-tune pretrained models for greater efficiency.",
+          t: "Massive pretrained open-source models outperform scratch models, and scaling requires high GPU resource availability."
+        },
+        keyAchievements: [
+          { label: "Accuracy", value: "98.0%" },
+          { label: "Architecture", value: "Built from Scratch" }
+        ],
+        techStack: ["Python", "TensorFlow", "Transformer Architecture"],
+      },
+      engineering: {
+        headline: "From-Scratch Encoder-Decoder Pipeline",
+        architecture: "Developed a pure deep learning pipeline in TensorFlow, focusing strictly on architectural clarity and mathematical correctness over deployment scale. Hand-implemented embeddings, positional encodings, and complex attention layers.",
+        architectureFlow: {
+          groups: [
+            { id: "input", title: "Sequence Prep" },
+            { id: "encoder", title: "Encoder Block" },
+            { id: "decoder", title: "Decoder Block" }
+          ],
+          nodes: [
+            { id: "embed", title: "Text Embeddings", tech: "TensorFlow", groupId: "input" },
+            { id: "pos", title: "Positional Encoding", tech: "Sine/Cosine Math", groupId: "input" },
+            { id: "self_att", title: "Self-Attention", tech: "QKV Matrices", groupId: "encoder" },
+            { id: "cross_att", title: "Cross-Attention", tech: "Context Mapping", groupId: "decoder" },
+            { id: "ffn", title: "Feed-Forward", tech: "Dense Layers", groupId: "decoder" },
+            { id: "softmax", title: "Output Probabilities", tech: "Softmax Activation", groupId: "decoder" }
+          ],
+          edges: [
+            { fromId: "embed", toId: "pos", labelTop: "vector representations" },
+            { fromId: "pos", toId: "self_att", labelTop: "sequence + position" },
+            { fromId: "self_att", toId: "cross_att", labelTop: "encoder context" },
+            { fromId: "cross_att", toId: "ffn", labelTop: "attention weights" },
+            { fromId: "ffn", toId: "softmax", labelTop: "logits", labelBottom: "translated token" }
+          ]
+        },
+        coreSnippet: "def call(self, x, training, mask):\n    attn_output = self.mha(x, x, x, mask)\n    out1 = self.layernorm1(x + attn_output)\n    ffn_output = self.ffn(out1)\n    return self.layernorm2(out1 + ffn_output)",
+        techStack: ["TensorFlow", "Math", "Python"],
+      },
+      agentic: {
+        headline: "Foundational NLP Capability",
+        paradigm: "Core Language Generation Module",
+        reasoningTrace: [
+          { step: "01", action: "Tokenize input English string and apply mathematical positional encodings.", result: "Sequence order and semantic context preserved." },
+          { step: "02", action: "Calculate multi-head self-attention and cross-attention weights.", result: "Model learns relationships between all words simultaneously." },
+          { step: "03", action: "Decode latent representations into highest-probability French tokens.", result: "Accurate translation generated." }
+        ],
+        coreLogic: "This project is purely a core NLP capability system, not an autonomous agent. However, sequence-to-sequence Transformers are the fundamental building blocks (the 'brain') of all modern agentic systems, giving them the ability to comprehend context and generate natural language responses.",
+        techStack: ["Transformers", "Self-Attention", "TensorFlow"]
+      }
+    }
   }
+  
 ];
