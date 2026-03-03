@@ -59,17 +59,29 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
   const { lens } = useLens();
   const lensContent = project.content[lens]!;
   const descriptionText =
-    lens === 'product'
-      ? project.content.product.painPoint
+lens === 'product'
+      ? project.content.product.painPoint || 'Details unavailable.'
+      : lens === 'engineering'
+      ? project.content.engineering.description ||
+        project.content.engineering.architecture ||
+        'Details unavailable.'
       : lens === 'agentic'
-      ? project.content.agentic!.coreLogic
-      : 'A groundbreaking project';
+      ? project.content.agentic?.description ||
+        project.content.agentic?.coreLogic ||
+        'Details unavailable.'
+      : 'Details unavailable.';
   const statText =
     lens === 'product'
-      ? project.content.product.keyAchievements?.[0]?.value || 'View More'
+      ? project.content.product.keyAchievements?.[0]?.value || 'View Details'
       : lens === 'agentic'
-      ? project.content.agentic!.paradigm
-      : 'Explore';
+      ? project.content.agentic?.paradigm || 'View Agent Logic'
+      : 'System Blueprint';
+  const buttonText =
+    lens === 'product'
+      ? 'View Product Details'
+      : lens === 'engineering'
+      ? 'View Architecture'
+      : 'View Agent Logic';
   const relevantTechs = LENS_TECH_MAP[lens] || [];
 
   return (
@@ -85,6 +97,9 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
           : lens === 'engineering'
           ? 'bg-slate-900 border border-slate-800 hover:border-cyan-500/50 shadow-none'
           : 'backdrop-blur-xl bg-violet-900/10 border border-transparent hover:border-violet-500/50 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40'
+
+
+          
       }`}
       style={
         lens === 'agentic'
@@ -206,6 +221,9 @@ export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProp
                     ? 'bg-slate-800 border border-emerald-500/30 text-emerald-400 uppercase tracking-widest text-xs hover:bg-slate-700/80'
                     : 'bg-purple-500/20 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50'
                 }`}
+
+
+                
               >
                 {statText}
               </motion.div>

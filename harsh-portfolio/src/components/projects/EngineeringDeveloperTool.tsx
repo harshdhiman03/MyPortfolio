@@ -159,7 +159,7 @@ export const EngineeringDeveloperTool = ({ project }: { project: Project }) => {
       className="space-y-6 font-mono text-xs"
     >
       {/* System Status Header */}
-      <motion.div variants={itemVariants} className="border border-slate-700 bg-slate-900/50 p-4 rounded-none">
+      {/* <motion.div variants={itemVariants} className="border border-slate-700 bg-slate-900/50 p-4 rounded-none">
         <div className="flex items-center justify-between mb-3">
           <span className="text-cyan-400 font-bold">STATUS_BAR</span>
           <div className="flex items-center gap-3 text-xs text-slate-400">
@@ -172,7 +172,7 @@ export const EngineeringDeveloperTool = ({ project }: { project: Project }) => {
           </div>
         </div>
         <div className="h-px bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700" />
-      </motion.div>
+      </motion.div> */}
 
       {/* Headline */}
       <motion.div variants={itemVariants}>

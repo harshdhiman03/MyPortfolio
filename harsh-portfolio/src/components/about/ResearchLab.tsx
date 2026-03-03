@@ -11,44 +11,48 @@ type Paper = {
   badge: 'IEEE' | 'Springer';
   summary: string;
   abstract: string;
+  link?: string;
 };
 
 const PAPERS: Paper[] = [
-  {
-    id: 'foodoptima',
-    title: 'FoodOptima (Springer/Scopus)',
-    venue: 'Springer',
-    badge: 'Springer',
-    summary: 'AI Waste Reduction using EfficientNetB0.',
-    abstract:
-      'Designed a post-meal waste estimation pipeline using EfficientNetB0 and computer vision processing to quantify food residue and support sustainable reduction planning.',
-  },
+  // {
+  //   id: 'foodoptima',
+  //   title: 'FoodOptima (Springer/Scopus)',
+  //   venue: 'Springer',
+  //   badge: 'Springer',
+  //   summary: 'AI Waste Reduction using EfficientNetB0.',
+  //   abstract:
+  //     'Designed a post-meal waste estimation pipeline using EfficientNetB0 and computer vision processing to quantify food residue and support sustainable reduction planning.',
+  // },
   {
     id: 'ieee-nlp',
-    title: 'IEEE Paper 1 (NLP)',
+    title: 'Analysing Text Summarization Techniques: Extractive & Abstractive Methods',
     venue: 'IEEE',
     badge: 'IEEE',
+    link: 'https://ieeexplore.ieee.org/document/11211425',
     summary: 'Text Summarization using Active Learning.',
     abstract:
-      'Explored active learning strategies for selecting informative text samples, improving summarization quality with reduced labeling effort.',
+      `Efficiently distilling extensive content into clear and impactful summaries is a critical task in natural language processing. In the study, we conducted inclusive evaluation of multiple text-summarization models, assessing them across a range of criteria, including perplexity, grammatical coherence, semantic consistency, length control, computational complexity, cross-sentence dependencies, and ROUGE scores. Our results indicate that the Active Learning Model achieved superior performance compared to all other evaluated approaches. Consequently, such models serve as valuable tools for addressing realworld challenges. These findings underscore meaningful progress in fields such as journalism and education, supporting the creation of more efficient summarization systems suited for today's information-concentrated landscape.`,
   },
   {
     id: 'ieee-uav',
-    title: 'IEEE Paper 2 (UAV Networks)',
+    title: `Critical Analysis and Performance Assessment of Reactive Ad Hoc Routing Protocols in Unmanned Aerial Vehicle Network's`,
     venue: 'IEEE',
     badge: 'IEEE',
+    link: 'https://ieeexplore.ieee.org/document/10982849',
     summary: 'Routing Performance Optimization.',
     abstract:
-      'Analyzed routing tradeoffs in UAV communication networks and evaluated optimization paths to increase throughput and reliability.',
+      'When used as aerial relays in the Internet of Drones (IoD) network unmanned aerial vehicles (UAVs) provide several advantages in both the military and civilian sectors. Their collaboration creates a fascinating field for additional study. An autonomous network of unmanned aerial vehicles (UAVs) known as a Flying Ad-Hoc Network (FANET) is defined by its high mobility and frequent topology changes, which present routing issues. The 3Dimensional Improvised Clustering Algorithm (3DICA), 3D Improvised Trajectory Algorithm (3DITA), and Bio-Inspired Clustering Scheme for FANETs (BISCF) are three of the optimized routing protocols for FANETs that are examined in this work These techniques have been assessed using the MATLAB simulator. based on the following mobility models: Manhattan Grid Mobility Model (MGM), Random Waypoint Mobility (RWPM), Semi-Circular Random Movement (SCRM), Number of Hops, Reliability, Jitter, and Throughput across different speeds and mobility models (PRS). The results show that in every evaluation situation, 3DITA performs better than 3DICA and BISCF. This assessment is necessary to determine the best FANET routing strategy, which could result in more dependable and durable UAV communication systems.',
   },
   {
     id: 'ieee-health',
-    title: 'IEEE Paper 3 (Healthcare)',
+    title: 'Metabolism and Machine Learning for Better Diabetes Care',
     venue: 'IEEE',
     badge: 'IEEE',
     summary: 'ML Applications in Analytics.',
+    link: 'https://ieeexplore.ieee.org/document/11210898',
     abstract:
-      'Studied practical machine learning use-cases in healthcare analytics, covering predictive trends and decision-support system design.',
+      'This project reinvents diabetes management by integrating metabolism data, machine learning, and full-stack development to support proactive, personalized care. In contrast to conventional reactive methods, it combines metabolic marker, lifestyle, and demographic data and maintains consistency through preprocessing. Random Forest & Logistic Regression models are used aimed at predicting risk at over 85 % accuracy. The platform extends prediction to provide individualized recommendations like medicine advice, diet based on glucose levels, and custom workouts. Adaptive interfaces are ensured through a React-based frontend and secure processing is handled through a Flask/Django backend along with API and compliance management. By integrating machine learning insights with human-centric design, this solution enables patients to effectively manage chronic diseases with anticipation and personalization.',
   },
 ];
 
@@ -64,7 +68,6 @@ const SYMBOL_TEXTURE = [
 
 export const ResearchLab = () => {
   const { lens } = useLens();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const getStyles = () => {
     switch (lens) {
@@ -75,12 +78,16 @@ export const ResearchLab = () => {
           title: 'text-slate-900',
           subtitle: 'text-slate-600',
           card:
-            'bg-white/75 border border-slate-200 text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.09)]',
+            'bg-white rounded-2xl p-6 shadow-sm border border-slate-200 overflow-hidden flex flex-col gap-4 relative text-slate-700',
           badgeSpringer: 'bg-emerald-50 text-emerald-700 border-emerald-200',
           badgeIEEE: 'bg-blue-50 text-blue-700 border-blue-200',
-          button:
-            'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300',
+          secondaryButton:
+            'px-4 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors',
+          primaryButton:
+            'px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors flex items-center gap-1',
+          primaryButtonDisabled: 'opacity-60 pointer-events-none',
           abstract: 'text-slate-600',
+          abstractBorder: 'border-slate-100',
           texture: 'text-slate-300/40',
         };
       case 'engineering':
@@ -90,13 +97,17 @@ export const ResearchLab = () => {
           subtitle:
             'text-slate-400 font-mono text-xs uppercase tracking-widest',
           card:
-            'bg-slate-900/85 border border-cyan-500/30 text-slate-200 shadow-[0_12px_28px_rgba(0,0,0,0.45)]',
+            'bg-slate-900/85 rounded-2xl p-6 border border-cyan-500/30 text-slate-200 shadow-[0_12px_28px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col gap-4 relative',
           badgeSpringer:
             'bg-emerald-500/10 text-emerald-300 border-emerald-400/40',
           badgeIEEE: 'bg-cyan-500/10 text-cyan-300 border-cyan-400/40',
-          button:
-            'bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/50 font-mono',
+          secondaryButton:
+            'px-4 py-2 text-sm font-medium text-cyan-300 bg-slate-800 hover:bg-slate-700 border border-cyan-500/50 rounded-lg transition-colors font-mono',
+          primaryButton:
+            'px-4 py-2 text-sm font-medium text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-colors flex items-center gap-1 font-mono',
+          primaryButtonDisabled: 'opacity-60 pointer-events-none',
           abstract: 'text-slate-300',
+          abstractBorder: 'border-slate-700/70',
           texture: 'text-cyan-500/20',
         };
       case 'agentic':
@@ -105,13 +116,17 @@ export const ResearchLab = () => {
           title: 'text-violet-100',
           subtitle: 'text-violet-300/70',
           card:
-            'bg-violet-900/20 border border-violet-400/35 text-violet-100 shadow-[0_12px_28px_rgba(168,85,247,0.28)]',
+            'bg-violet-900/20 rounded-2xl p-6 border border-violet-400/35 text-violet-100 shadow-[0_12px_28px_rgba(168,85,247,0.28)] overflow-hidden flex flex-col gap-4 relative',
           badgeSpringer:
             'bg-emerald-500/15 text-emerald-200 border-emerald-300/45',
           badgeIEEE: 'bg-violet-500/15 text-violet-200 border-violet-300/45',
-          button:
-            'bg-[#150a24] hover:bg-[#1b1130] text-violet-200 border border-violet-400/55 shadow-[0_0_14px_rgba(168,85,247,0.45)] font-mono',
+          secondaryButton:
+            'px-4 py-2 text-sm font-medium text-violet-200 bg-[#150a24] hover:bg-[#1b1130] border border-violet-400/55 rounded-lg transition-colors shadow-[0_0_14px_rgba(168,85,247,0.45)] font-mono',
+          primaryButton:
+            'px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-500 rounded-lg transition-colors flex items-center gap-1 font-mono',
+          primaryButtonDisabled: 'opacity-60 pointer-events-none',
           abstract: 'text-violet-200',
+          abstractBorder: 'border-violet-400/25',
           texture: 'text-violet-400/20',
         };
       default:
@@ -121,18 +136,98 @@ export const ResearchLab = () => {
           title: 'text-slate-900',
           subtitle: 'text-slate-600',
           card:
-            'bg-white/75 border border-slate-200 text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.09)]',
+            'bg-white rounded-2xl p-6 shadow-sm border border-slate-200 overflow-hidden flex flex-col gap-4 relative text-slate-700',
           badgeSpringer: 'bg-emerald-50 text-emerald-700 border-emerald-200',
           badgeIEEE: 'bg-blue-50 text-blue-700 border-blue-200',
-          button:
-            'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300',
+          secondaryButton:
+            'px-4 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors',
+          primaryButton:
+            'px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors flex items-center gap-1',
+          primaryButtonDisabled: 'opacity-60 pointer-events-none',
           abstract: 'text-slate-600',
+          abstractBorder: 'border-slate-100',
           texture: 'text-slate-300/40',
         };
     }
   };
 
   const styles = getStyles();
+  type Styles = typeof styles;
+
+  const ResearchCard = ({
+    paper,
+    index,
+    styles,
+  }: {
+    paper: Paper;
+    index: number;
+    styles: Styles;
+  }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.35, delay: index * 0.06 }}
+        className={styles.card}
+      >
+        <span
+          className={`absolute top-4 right-4 rounded-md border px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
+            paper.badge === 'IEEE' ? styles.badgeIEEE : styles.badgeSpringer
+          }`}
+        >
+          {paper.badge}
+        </span>
+
+        <h3 className="pr-20 text-lg md:text-xl font-bold">{paper.title}</h3>
+        <p className="text-xs uppercase tracking-wider opacity-70">{paper.venue}</p>
+        <p className="text-sm md:text-base opacity-90">{paper.summary}</p>
+
+        <div className="flex flex-wrap items-center gap-3 mt-2">
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className={styles.secondaryButton}
+          >
+            {isExpanded ? 'Close Abstract' : 'Read Abstract'}
+          </button>
+          <a
+            href={paper.link || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              if (!paper.link) event.preventDefault();
+            }}
+            aria-disabled={!paper.link}
+            className={`${styles.primaryButton} ${!paper.link ? styles.primaryButtonDisabled : ''}`}
+          >
+            Read Paper <span aria-hidden>↗</span>
+          </a>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className={`pt-4 border-t mt-2 ${styles.abstractBorder}`}>
+                <p className={`text-sm leading-relaxed ${styles.abstract}`}>
+                  {paper.abstract}
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  };
 
   return (
     <section className={`relative overflow-hidden px-6 py-16 rounded-2xl ${styles.section}`}>
@@ -159,63 +254,14 @@ export const ResearchLab = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {PAPERS.map((paper, index) => {
-            const isExpanded = expandedId === paper.id;
-
-            return (
-              <motion.article
-                key={paper.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.35, delay: index * 0.06 }}
-                className={`relative rounded-xl p-5 md:p-6 backdrop-blur-md ${styles.card}`}
-              >
-                <span
-                  className={`absolute top-4 right-4 rounded-md border px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
-                    paper.badge === 'IEEE'
-                      ? styles.badgeIEEE
-                      : styles.badgeSpringer
-                  }`}
-                >
-                  {paper.badge}
-                </span>
-
-                <h3 className="pr-20 text-lg md:text-xl font-bold">{paper.title}</h3>
-                <p className="mt-1 text-xs uppercase tracking-wider opacity-70">{paper.venue}</p>
-                <p className="mt-4 text-sm md:text-base opacity-90">{paper.summary}</p>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExpandedId((current) =>
-                      current === paper.id ? null : paper.id
-                    )
-                  }
-                  className={`mt-5 rounded-md px-3 py-2 text-xs md:text-sm transition-colors ${styles.button}`}
-                >
-                  Read Abstract
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <motion.div
-                      key={`${paper.id}-abstract`}
-                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                      animate={{ height: 'auto', opacity: 1, marginTop: 14 }}
-                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                      transition={{ duration: 0.24, ease: 'easeOut' }}
-                      className="overflow-hidden"
-                    >
-                      <p className={`text-sm leading-relaxed ${styles.abstract}`}>
-                        {paper.abstract}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.article>
-            );
-          })}
+          {PAPERS.map((paper, index) => (
+            <ResearchCard
+              key={paper.id}
+              paper={paper}
+              index={index}
+              styles={styles}
+            />
+          ))}
         </div>
       </div>
     </section>

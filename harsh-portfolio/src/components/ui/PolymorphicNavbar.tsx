@@ -14,12 +14,28 @@ const NAVBAR_LINKS = [
   { label: 'Contact', href: '/#contact' },
 ];
 
+const resumeThemes = {
+  product: {
+    accent:
+      'text-slate-700 bg-white/80 hover:bg-white border-slate-300/70 shadow-[0_0_15px_-3px_rgba(15,23,42,0.12)] hover:shadow-[0_0_20px_-3px_rgba(15,23,42,0.2)]',
+  },
+  engineering: {
+    accent:
+      'text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border-cyan-400/30 shadow-[0_0_15px_-3px_rgba(34,211,238,0.25)] hover:shadow-[0_0_20px_-3px_rgba(34,211,238,0.35)]',
+  },
+  agentic: {
+    accent:
+      'text-fuchsia-200 bg-fuchsia-500/15 hover:bg-fuchsia-500/25 border-fuchsia-400/30 shadow-[0_0_15px_-3px_rgba(217,70,239,0.25)] hover:shadow-[0_0_20px_-3px_rgba(217,70,239,0.35)]',
+  },
+};
+
 export const PolymorphicNavbar = () => {
   const { lens } = useLens();
   const router = useRouter();
   const pathname = usePathname();
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const currentTheme = resumeThemes[lens] || resumeThemes.product;
 
   const handleNavClick = (href: string) => {
     if (href === '/#contact') {
@@ -91,7 +107,7 @@ export const PolymorphicNavbar = () => {
         transition={{ duration: 0.4 }}
         className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full border transition-all duration-700 ${styles.container}`}
       >
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           {NAVBAR_LINKS.map(({ label, href }) => (
             <motion.div
               key={label}
@@ -126,6 +142,30 @@ export const PolymorphicNavbar = () => {
               </motion.button>
             </motion.div>
           ))}
+
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`group flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 border backdrop-blur-md ${currentTheme.accent}`}
+          >
+            <span>Resume</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7 17L17 7M17 7H9M17 7V15"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
         </div>
       </motion.nav>
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />

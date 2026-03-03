@@ -590,6 +590,7 @@ export interface ProductContent {
 
 export interface EngineeringContent {
   headline: string;
+  description: string;
   architectureFlow: {
     nodes: { id: string; title: string; tech: string; groupId?: string }[];
     edges: { fromId: string; toId: string; labelTop: string; labelBottom?: string }[];
@@ -601,12 +602,14 @@ export interface EngineeringDeveloperDetails {
   architecture: string;
   coreSnippet: string;
   techStack: string[];
+  paradigm?: string;
 }
 
 export type EngineeringProjectContent = EngineeringContent & EngineeringDeveloperDetails;
 
 export interface AgenticContent {
   headline: string;
+  description: string;  
   paradigm: string;
   reasoningTrace: { step: string; action: string; result: string }[];
   coreLogic: string;
@@ -708,14 +711,15 @@ export const projects: Project[] = [
           t: "Relies heavily on the user capturing a clear, well-lit post-meal image for OpenCV to function properly."
         },
         keyAchievements: [
-          { label: "Publication", value: "Springer Scopus" },
+          { label: "Publication In Progress", value: "Springer Scopus" },
           { label: "Friction", value: "Zero Pre-Meal Scans" }
         ],
         techStack: ["EfficientNetB0", "OpenCV", "T5 Transformer", "Streamlit"],
       },
       engineering: {
         headline: "Computer Vision to LLM Pipeline",
-        architecture: "Monolithic Python application leveraging Streamlit for client-side rendering and PyTorch for zero-latency local inference.",
+        description: "Zero-latency local inference pipeline utilizing TensorFlow for edge-vision and Streamlit for client-rendering.",
+        architecture: "Monolithic Python application leveraging Streamlit for client-side rendering and Tensorflow for zero-latency local inference.",
         architectureFlow: {
           groups: [
             { id: "edge", title: "Client Edge" },
@@ -737,7 +741,9 @@ export const projects: Project[] = [
           ]
         },
         coreSnippet: "def process_waste_image(image):\n    contours = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)\n    features = efficientnet_model.predict(normalize(image))\n    return calculate_volume(contours, features)",
-        techStack: ["Python", "PyTorch", "OpenCV", "Streamlit"],
+        techStack: ["Python", "Tensorflow", "OpenCV", "Streamlit"],
+        paradigm: "Multi-Modal Inference"
+
       },
       agentic: {
         headline: "Visual Reasoning & Generative Feedback",
@@ -772,12 +778,13 @@ export const projects: Project[] = [
         },
         keyAchievements: [
           { label: "Winner", value: "HACKINDIA SPARK-2" },
-          { label: "Friction", value: "-40%" }
+          { label: "Friction Reduced", value: "40%" }
         ],
         techStack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
       },
       engineering: {
         headline: "Session-Based Smart Contracts",
+        description: "Next.js client handling local gameplay state before pushing batched Keccak256 hashed payloads to the Base chain.",
         architecture: "Next.js client with Thirdweb provider, handling gameplay state locally before pushing batched payload to Base Blockchain via Ethers.js.",
         architectureFlow: {
           groups: [
@@ -825,12 +832,13 @@ export const projects: Project[] = [
         },
         keyAchievements: [
           { label: "Accuracy", value: "96.8%" },
-          { label: "Latency", value: "Reduced by 35%" }
+          { label: "Latency Reduced", value: "35%" }
         ],
         techStack: ["Python", "CNN", "LSTM", "Streamlit", "Hugging Face"],
       },
       engineering: {
         headline: "Dual-Pipeline ML Inference Architecture",
+        description: "Optimized dual-pipeline system combining CNNs for spatial ad-content and LSTMs for sequential URL threat analysis.",
         architecture: "Designed a highly optimized dual-pipeline system combining BeautifulSoup for structured web scraping, LSTM for sequential URL analysis, and CNN for visual ad-content classification.",
         architectureFlow: {
           groups: [
@@ -851,6 +859,8 @@ export const projects: Project[] = [
             { fromId: "cnn", toId: "app", labelBottom: "visual risk score" }
           ]
         },
+                paradigm: "Deterministic ML Pipeline (Path to Agentic)",
+
         coreSnippet: "def analyze_target_website(url):\n    text_data, ad_images = scraper.extract(url)\n    url_risk = lstm_model.predict(text_data)\n    visual_risk = cnn_model.predict(ad_images)\n    return ensemble_score(url_risk, visual_risk)",
         techStack: ["Python", "BeautifulSoup", "Streamlit", "Hugging Face"],
       },
@@ -893,6 +903,7 @@ export const projects: Project[] = [
       },
       engineering: {
         headline: "REST-Driven NLP & SSR Architecture",
+        description: "Next.js SSR frontend communicating via strictly typed REST APIs to a low-latency Python T5 Transformer backend.",
         architecture: "Designed with a strict separation of concerns: a performant Next.js frontend utilizing Server-Side Rendering (SSR) communicates via REST APIs to a Python-based ML backend optimized for inference latency.",
         architectureFlow: {
           groups: [
@@ -913,6 +924,8 @@ export const projects: Project[] = [
             { fromId: "inference", toId: "gateway", labelBottom: "probabilistic insight" }
           ]
         },
+        paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
+
         coreSnippet: "export async function fetchFinancialInsight(query: string, chartData: any) {\n  const response = await fetch('/api/recommendations', {\n    method: 'POST',\n    body: JSON.stringify({ query, context: chartData })\n  });\n  return response.json();\n}",
         techStack: ["Next.js", "Python", "REST APIs", "Hugging Face"],
       },
@@ -948,13 +961,14 @@ export const projects: Project[] = [
           t: "Security and access misconfiguration risks, along with the standard threat of slow internal adoption."
         },
         keyAchievements: [
-          { label: "Creation Time", value: "-60%" },
-          { label: "User Engagement", value: "+35%" }
+          { label: "Creation Time Reduced", value: "60%" },
+          { label: "User Engagement Increment", value: "35%" }
         ],
         techStack: ["React", "Node.js", "MongoDB", "Tailwind CSS", "JWT"],
       },
       engineering: {
         headline: "Secure MERN Stack Architecture",
+        description: "Decoupled React SPA featuring a custom design toolbar, communicating securely via JWT to a Node.js API.",
         architecture: "A decoupled full-stack architecture featuring a React SPA with a custom interactive design toolbar, communicating securely via JWT to a Node.js/Express backend backed by MongoDB.",
         architectureFlow: {
           groups: [
@@ -1008,7 +1022,7 @@ export const projects: Project[] = [
       },
       engineering: {
         headline: "From-Scratch Encoder-Decoder Pipeline",
-        architecture: "Developed a pure deep learning pipeline in TensorFlow, focusing strictly on architectural clarity and mathematical correctness over deployment scale. Hand-implemented embeddings, positional encodings, and complex attention layers.",
+description: "Pure TensorFlow deep learning pipeline implementing custom attention mechanisms and mathematical positional encodings.",        architecture: "Developed a pure deep learning pipeline in TensorFlow, focusing strictly on architectural clarity and mathematical correctness over deployment scale. Hand-implemented embeddings, positional encodings, and complex attention layers.",
         architectureFlow: {
           groups: [
             { id: "input", title: "Sequence Prep" },
@@ -1031,6 +1045,8 @@ export const projects: Project[] = [
             { fromId: "ffn", toId: "softmax", labelTop: "logits", labelBottom: "translated token" }
           ]
         },
+        paradigm: "Core Language Generation Module",
+
         coreSnippet: "def call(self, x, training, mask):\n    attn_output = self.mha(x, x, x, mask)\n    out1 = self.layernorm1(x + attn_output)\n    ffn_output = self.ffn(out1)\n    return self.layernorm2(out1 + ffn_output)",
         techStack: ["TensorFlow", "Math", "Python"],
       },

@@ -448,26 +448,26 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
                 ) : (
                   <>
                     {/* Visual Section for Engineering */}
-                    {lens === 'engineering' && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4 }}
-                        className="mb-8 h-48 bg-slate-900/70 rounded-lg border border-cyan-500/30 p-4 overflow-hidden flex flex-col justify-center relative"
-                      >
-                        {/* Line numbers */}
-                        <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800/50 border-r border-slate-700 flex flex-col items-center justify-start pt-4 text-xs text-slate-500/50 font-mono">
-                          {[1, 2, 3, 4, 5].map((n) => (
-                            <div key={n} className="h-6">
-                              {n}
-                            </div>
-                          ))}
-                        </div>
-                        <pre className="text-xs text-cyan-400 font-mono whitespace-pre-wrap overflow-hidden pl-2 leading-6">
-                          {CODE_SNIPPETS[project.id] || ''}
-                        </pre>
-                      </motion.div>
-                    )}
+                    {lens === 'engineering' 
+                      // <motion.div
+                      //   initial={{ opacity: 0 }}
+                      //   animate={{ opacity: 1 }}
+                      //   transition={{ duration: 0.4 }}
+                      //   className="mb-8 h-48 bg-slate-900/70 rounded-lg border border-cyan-500/30 p-4 overflow-hidden flex flex-col justify-center relative"
+                      // >
+                      //   {/* Line numbers */}
+                      //   <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800/50 border-r border-slate-700 flex flex-col items-center justify-start pt-4 text-xs text-slate-500/50 font-mono">
+                      //     {[1, 2, 3, 4, 5].map((n) => (
+                      //       <div key={n} className="h-6">
+                      //         {n}
+                      //       </div>
+                      //     ))}
+                      //   </div>
+                      //   <pre className="text-xs text-cyan-400 font-mono whitespace-pre-wrap overflow-hidden pl-2 leading-6">
+                      //     {CODE_SNIPPETS[project.id] || ''}
+                      //   </pre>
+                      // </motion.div>
+                    }
                     <h2 className={styles.header}>
                       {project.title}
                     </h2>
