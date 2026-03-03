@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
+import { ContactModal } from '@/components/ContactModal';
 
 const NAVBAR_LINKS = [
   { label: 'Home', href: '/' },
@@ -18,8 +19,14 @@ export const PolymorphicNavbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const handleNavClick = (href: string) => {
+    if (href === '/#contact') {
+      setIsContactOpen(true);
+      return;
+    }
+
     if (href.startsWith('/#')) {
       // Hash link - need to navigate to home first, then scroll
       const hash = href.substring(1);
@@ -121,6 +128,7 @@ export const PolymorphicNavbar = () => {
           ))}
         </div>
       </motion.nav>
+      <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
     </AnimatePresence>
   );
 };

@@ -801,18 +801,8 @@ export const projects: Project[] = [
         },
         coreSnippet: "const initializeSession = async () => {\n  const signature = await signer._signTypedData(domain, types, value);\n  setSessionState({ active: true, sig: signature });\n};",
         techStack: ["Next.js", "Ethers.js", "Solidity"],
-      },
-      agentic: {
-        headline: "Autonomous State Management",
-        paradigm: "Autonomous Smart Contract",
-        reasoningTrace: [
-          { step: "01", action: "Capture signed gameplay events into a session channel.", result: "Trusted move stream assembled without per-action gas cost." },
-          { step: "02", action: "Hash and validate batched state transitions.", result: "Tamper-resistant proof of gameplay integrity created." },
-          { step: "03", action: "Execute settlement contract with final state proof.", result: "Balances and outcomes committed on-chain deterministically." }
-        ],
-        coreLogic: "The runtime behaves as an autonomous adjudicator: it accumulates off-chain actions, validates integrity through cryptographic proofs, and finalizes state through Solidity settlement.",
-        techStack: ["Solidity", "Ethers.js", "Thirdweb", "Next.js"]
       }
+    
     },
   },
   {

@@ -36,7 +36,7 @@ A sophisticated Next.js portfolio that showcases your work through three distinc
 - Smooth AnimatePresence transitions
 
 ### Lens-Specific Content
-- **Product**: "Building Award-Winning Web3 & AI Experiences" + ProductCard visual
+- **Product**: "Crafting Intelligent Full-Stack & AI Experiences" + ProductCard visual
 - **Engineering**: "Architecting Scalable Cloud Pipelines" + SystemDiagram visual
 - **Agentic**: "Designing Intelligent Agents & NLP Systems" + AgentTerminal visual
 

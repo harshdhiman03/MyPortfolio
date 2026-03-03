@@ -10,14 +10,14 @@ import { AgentTerminal } from './hero/AgentTerminal';
 // Content for each lens
 const HERO_CONTENT = {
   product: {
-    headline: 'Building Award-Winning Web3 & AI Experiences.',
-    subtitle: 'HackIndia Spark-2 Winner.',
+    headline: 'Crafting Intelligent Full-Stack & AI Experiences.',
+    subtitle: 'Bridging deep learning research with seamless, user-centric product design.',
     cta: 'View Case Study',
     component: GenerativeUIHero,
   },
   engineering: {
-    headline: 'Architecting Scalable Cloud Pipelines.',
-    subtitle: 'Reduced process time by 36% at Infosys.',
+    headline: 'Architecting End-to-End Systems.',
+    subtitle: 'Automating complex pipelines to accelerate execution time.',
     cta: 'View Architecture',
     component: SystemDiagram,
   },
@@ -275,7 +275,7 @@ export const Hero = () => {
                   : 'text-violet-400'
               }`}
             >
-              36%
+              3+
             </p>
             <p
               className={`font-mono text-sm ${
@@ -286,7 +286,7 @@ export const Hero = () => {
                   : 'text-purple-300/80 uppercase tracking-widest text-xs'
               }`}
             >
-              Process Time Reduction
+              Research Publications
             </p>
           </motion.div>
 
@@ -304,7 +304,7 @@ export const Hero = () => {
                   : 'text-pink-400'
               }`}
             >
-              3
+              60%
             </p>
             <p
               className={`font-mono text-sm ${
@@ -315,7 +315,7 @@ export const Hero = () => {
                   : 'text-purple-300/80 uppercase tracking-widest text-xs'
               }`}
             >
-              Award-Winning Projects
+              Workflow Acceleration via React Tooling
             </p>
           </motion.div>
 
