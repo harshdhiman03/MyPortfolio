@@ -17,6 +17,8 @@ const SUGGESTION_PROMPTS = [
   'What is your tech stack?',
 ];
 
+const MAX_QUERIES = 8;
+
 // Custom useChat hook
 const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engineering' | 'agentic') => void }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,9 +31,9 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
     setInput(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading) return false;
 
     const userMessage = input.trim();
     setInput('');
@@ -75,7 +77,7 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
             content: `Error: ${errorText}`,
           },
         ]);
-        return;
+        return false;
       }
 
       const data = await response.json();
@@ -103,6 +105,7 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
           options.onLensSwitch?.(data.action.payload);
         }, 300);
       }
+      return true;
     } catch (error) {
       console.error('Chat error:', error);
       const errorMessage: Message = {
@@ -111,6 +114,7 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
         content: 'Sorry, I encountered an error. Please try again.',
       };
       setMessages((prev) => [...prev, errorMessage]);
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +125,7 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
 
 export const AgentChat = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [queryCount, setQueryCount] = useState(0);
   const { lens, setLens } = useLens();
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
@@ -141,15 +146,43 @@ export const AgentChat = () => {
   }, [messages]);
 
   useEffect(() => {
+    const savedCount = localStorage.getItem('chatQueryCount');
+    if (!savedCount) return;
+    const parsed = Number.parseInt(savedCount, 10);
+    if (!Number.isNaN(parsed)) {
+      setQueryCount(parsed);
+    }
+  }, []);
+
+  useEffect(() => {
     const handleOpenChat = () => setIsOpen(true);
     window.addEventListener('open-agent-chat', handleOpenChat);
     return () => window.removeEventListener('open-agent-chat', handleOpenChat);
   }, []);
 
+  const incrementQueryCount = () => {
+    setQueryCount((prev) => {
+      const newCount = prev + 1;
+      localStorage.setItem('chatQueryCount', newCount.toString());
+      return newCount;
+    });
+  };
+
+  const limitReached = queryCount >= MAX_QUERIES;
+
+  const handleLimitedSubmit = async (e: React.FormEvent) => {
+    if (limitReached) {
+      e.preventDefault();
+      return;
+    }
+    const sent = await handleSubmit(e);
+    if (sent) {
+      incrementQueryCount();
+    }
+  };
+
   const handleSuggestionClick = (suggestion: string) => {
-    const event = {
-      preventDefault: () => {},
-    } as React.FormEvent;
+    if (limitReached || isLoading) return;
 
     // Set input and submit
     const mockEvent = {
@@ -165,7 +198,7 @@ export const AgentChat = () => {
       const submitEvent = {
         preventDefault: () => {},
       } as React.FormEvent;
-      handleSubmit(submitEvent);
+      void handleLimitedSubmit(submitEvent);
     }, 0);
   };
 
@@ -176,6 +209,30 @@ export const AgentChat = () => {
     agentic: 'bg-fuchsia-600 hover:bg-fuchsia-700 shadow-fuchsia-500/40 text-white',
   };
   const currentFabTheme = fabThemes[lens] || fabThemes.product;
+  const chatThemes = {
+    product: {
+      header: 'bg-indigo-600 text-white',
+      userBubble: 'bg-indigo-600 text-white',
+      aiBubble: 'bg-slate-100 text-slate-800 border-slate-200',
+      sendBtn: 'bg-indigo-600 hover:bg-indigo-700 text-white',
+      focusRing: 'focus:ring-indigo-500',
+    },
+    engineering: {
+      header: 'bg-slate-900 border-b border-cyan-500/30 text-cyan-400',
+      userBubble: 'bg-cyan-900/40 border border-cyan-500/30 text-cyan-100',
+      aiBubble: 'bg-slate-800 border-slate-700 text-slate-300',
+      sendBtn: 'bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-400 border border-cyan-500/30',
+      focusRing: 'focus:ring-cyan-500',
+    },
+    agentic: {
+      header: 'bg-fuchsia-950/80 border-b border-fuchsia-500/30 text-fuchsia-400',
+      userBubble: 'bg-fuchsia-900/40 border border-fuchsia-500/30 text-fuchsia-100',
+      aiBubble: 'bg-slate-900 border-slate-800 text-slate-300',
+      sendBtn: 'bg-fuchsia-600/20 hover:bg-fuchsia-600/40 text-fuchsia-400 border border-fuchsia-500/30',
+      focusRing: 'focus:ring-fuchsia-500',
+    },
+  };
+  const theme = chatThemes[lens] || chatThemes.product;
 
   return (
     <>
@@ -204,12 +261,12 @@ export const AgentChat = () => {
             className="fixed bottom-24 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 max-h-[75vh] flex flex-col z-50 bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-white/20 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl"
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-600/30 to-blue-600/30">
+            <div className={`p-4 ${theme.header}`}>
               <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-5 h-5 text-purple-400" />
-                <h3 className="text-white font-bold text-lg">Ask My Digital Twin</h3>
+                <Sparkles className="w-5 h-5" />
+                <h3 className="font-bold text-lg">Ask My Digital Twin</h3>
               </div>
-              <p className="text-xs text-white/60">Powered by AI</p>
+              <p className="text-xs opacity-70">Powered by AI</p>
             </div>
 
             {/* Messages Area */}
@@ -240,8 +297,8 @@ export const AgentChat = () => {
                   <div
                     className={`max-w-xs px-4 py-2 rounded-xl text-sm ${
                       msg.role === 'user'
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-br-none'
-                        : 'bg-white/10 text-white/90 border border-white/20 rounded-bl-none backdrop-blur-sm'
+                        ? `${theme.userBubble} rounded-br-none`
+                        : `${theme.aiBubble} border rounded-bl-none backdrop-blur-sm`
                     }`}
                   >
                     <p className="leading-relaxed">{msg.content}</p>
@@ -301,7 +358,7 @@ export const AgentChat = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleSubmit(e);
+                handleLimitedSubmit(e);
               }}
               className="p-4 border-t border-white/10 bg-slate-950/80 backdrop-blur-sm"
             >
@@ -310,16 +367,16 @@ export const AgentChat = () => {
                   type="text"
                   value={input}
                   onChange={handleInputChange}
-                  placeholder="Ask something..."
-                  disabled={isLoading}
-                  className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:border-white/40 text-sm disabled:opacity-50 transition-all"
+                  placeholder={limitReached ? 'Limit reached. Please use the contact form.' : 'Ask something...'}
+                  disabled={isLoading || limitReached}
+                  className={`flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 text-sm disabled:opacity-50 transition-all ${theme.focusRing}`}
                 />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   type="submit"
-                  disabled={isLoading || !input.trim()}
-                  className="p-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  disabled={isLoading || !input.trim() || limitReached}
+                  className={`p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all ${theme.sendBtn}`}
                 >
                   <Send className="w-4 h-4" />
                 </motion.button>
