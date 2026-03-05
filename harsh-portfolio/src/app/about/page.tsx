@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
 import { PolymorphicNavbar } from '@/components/ui/PolymorphicNavbar';
@@ -101,7 +102,9 @@ export default function AboutPage() {
 
       {/* Navbar */}
       <div className="relative z-50">
-        <PolymorphicNavbar />
+        <Suspense fallback={null}>
+          <PolymorphicNavbar />
+        </Suspense>
       </div>
 
       {/* About Hero Section */}

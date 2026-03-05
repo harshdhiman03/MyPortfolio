@@ -746,6 +746,7 @@ export const projects: Project[] = [
 
       },
       agentic: {
+        description: "The agentic behavior emerges from the sequential fusion of computer vision and language generation. It autonomously translates raw visual waste signals into actionable, personalized recommendations without user prompting.",
         headline: "Visual Reasoning & Generative Feedback",
         paradigm: "Multi-Modal Inference",
         reasoningTrace: [
@@ -856,7 +857,7 @@ export const projects: Project[] = [
             { fromId: "scraper", toId: "lstm", labelTop: "URL sequences" },
             { fromId: "scraper", toId: "cnn", labelTop: "Image tensors" },
             { fromId: "lstm", toId: "app", labelTop: "text risk score" },
-            { fromId: "cnn", toId: "app", labelBottom: "visual risk score" }
+            { fromId: "cnn", toId: "app", labelTop: "", labelBottom: "visual risk score" }
           ]
         },
                 paradigm: "Deterministic ML Pipeline (Path to Agentic)",
@@ -865,6 +866,7 @@ export const projects: Project[] = [
         techStack: ["Python", "BeautifulSoup", "Streamlit", "Hugging Face"],
       },
       agentic: {
+        description: "The agentic behavior emerges from the dual-modal fusion of sequential URL analysis and visual ad-content classification. By autonomously synthesizing these distinct threat signals, the system can surface a unified, high-confidence verdict on website legitimacy without user intervention.",
         headline: "Reactive Multi-Modal Inference Engine",
         paradigm: "Deterministic ML Pipeline (Path to Agentic)",
         reasoningTrace: [
@@ -921,7 +923,7 @@ export const projects: Project[] = [
             { fromId: "ui", toId: "charts", labelTop: "render live data" },
             { fromId: "ui", toId: "gateway", labelTop: "user query + context" },
             { fromId: "gateway", toId: "inference", labelTop: "REST payload" },
-            { fromId: "inference", toId: "gateway", labelBottom: "probabilistic insight" }
+            { fromId: "inference", toId: "gateway",labelTop: "", labelBottom: "probabilistic insight" }
           ]
         },
         paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
@@ -930,6 +932,7 @@ export const projects: Project[] = [
         techStack: ["Next.js", "Python", "REST APIs", "Hugging Face"],
       },
       agentic: {
+        description: "The agentic behavior emerges from the contextual fusion of real-time market data and NLP-driven recommendation generation. By autonomously interpreting volatile financial signals through a Transformer lens, the system can surface actionable insights without explicit user prompting, effectively acting as a semi-agentic financial advisor.",
         headline: "Semi-Agentic Contextual Generator",
         paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
         reasoningTrace: [
@@ -1051,6 +1054,7 @@ description: "Pure TensorFlow deep learning pipeline implementing custom attenti
         techStack: ["TensorFlow", "Math", "Python"],
       },
       agentic: {
+        description: "While not an autonomous agent, the model's architecture serves as a foundational NLP capability. The self-attention and cross-attention mechanisms enable the system to learn complex relationships and context, which are essential building blocks for any future agentic language system.",
         headline: "Foundational NLP Capability",
         paradigm: "Core Language Generation Module",
         reasoningTrace: [

@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
 import { IdentityHero } from './IdentityHero';
-import { Timeline } from './Timeline';
+// import { Timeline } from './Timeline';
 import { StatsCard } from './StatsCard';
 import { NeuralSkillGraph } from './NeuralSkillGraph';
 
@@ -28,7 +28,7 @@ export const AboutSection = () => {
         <StatsCard />
 
         {/* Section 3: Timeline */}
-        <Timeline />
+        {/* <Timeline /> */}
 
         {/* Section 4: Neural Skill Graph */}
         <NeuralSkillGraph />

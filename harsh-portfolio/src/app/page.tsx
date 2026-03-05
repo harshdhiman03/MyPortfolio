@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useLens } from '@/context/LensContext';
 import { PolymorphicNavbar } from '@/components/ui/PolymorphicNavbar';
 import { Hero } from '@/components/Hero';
@@ -45,7 +45,9 @@ export default function HomePage() {
     <main className={`relative w-full overflow-x-hidden transition-colors duration-700 ${styles.wrapper}`}>
       {/* Navbar */}
       <div className="relative z-50">
-        <PolymorphicNavbar />
+        <Suspense fallback={null}>
+          <PolymorphicNavbar />
+        </Suspense>
       </div>
 
       {/* Hero Section */}
