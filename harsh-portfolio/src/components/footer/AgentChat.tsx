@@ -121,7 +121,7 @@ const useChat = (options: { api: string; onLensSwitch?: (lens: 'product' | 'engi
 
 export const AgentChat = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { setLens } = useLens();
+  const { lens, setLens } = useLens();
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: '/api/chat',
@@ -139,6 +139,12 @@ export const AgentChat = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-agent-chat', handleOpenChat);
+    return () => window.removeEventListener('open-agent-chat', handleOpenChat);
+  }, []);
 
   const handleSuggestionClick = (suggestion: string) => {
     const event = {
@@ -164,6 +170,12 @@ export const AgentChat = () => {
   };
 
   const showSuggestions = messages.length === 0;
+  const fabThemes = {
+    product: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/40 text-white',
+    engineering: 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-500/40 text-white',
+    agentic: 'bg-fuchsia-600 hover:bg-fuchsia-700 shadow-fuchsia-500/40 text-white',
+  };
+  const currentFabTheme = fabThemes[lens] || fabThemes.product;
 
   return (
     <>
@@ -172,7 +184,7 @@ export const AgentChat = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-24 right-8 z-30 p-4 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 text-white shadow-lg hover:shadow-purple-500/50 transition-all backdrop-blur-md border border-white/20"
+        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg transition-all z-50 backdrop-blur-md border border-white/20 ${currentFabTheme}`}
       >
         {isOpen ? (
           <X className="w-6 h-6" />
@@ -189,7 +201,7 @@ export const AgentChat = () => {
             animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
             exit={{ opacity: 0, y: 20, scale: 0.95, x: 20 }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
-            className="fixed bottom-40 right-8 z-30 w-96 max-h-[600px] bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-white/20 rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl"
+            className="fixed bottom-24 right-4 sm:right-6 w-[calc(100vw-2rem)] sm:w-96 max-h-[75vh] flex flex-col z-50 bg-gradient-to-br from-slate-900/95 to-slate-950/95 border border-white/20 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl"
           >
             {/* Header */}
             <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-600/30 to-blue-600/30">

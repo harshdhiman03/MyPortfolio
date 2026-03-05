@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
 import { ContactModal } from '@/components/ContactModal';
@@ -31,27 +31,9 @@ const resumeThemes = {
 
 export const PolymorphicNavbar = () => {
   const { lens } = useLens();
-  const router = useRouter();
-  const pathname = usePathname();
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const currentTheme = resumeThemes[lens] || resumeThemes.product;
-
-  const handleNavClick = (href: string) => {
-    if (href === '/#contact') {
-      setIsContactOpen(true);
-      return;
-    }
-
-    if (href.startsWith('/#')) {
-      // Hash link - need to navigate to home first, then scroll
-      const hash = href.substring(1);
-      router.push('/' + hash);
-    } else {
-      // Regular page link
-      router.push(href);
-    }
-  };
 
   // Get styles based on lens
   const getNavbarStyles = () => {
@@ -98,14 +80,12 @@ export const PolymorphicNavbar = () => {
   const styles = getNavbarStyles();
 
   return (
-    <AnimatePresence mode="wait">
+    <>
       <motion.nav
-        key={lens}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.4 }}
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full border transition-all duration-700 ${styles.container}`}
+        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full border transition-all duration-700 ease-in-out ${styles.container}`}
       >
         <div className="flex items-center gap-6">
           {NAVBAR_LINKS.map(({ label, href }) => (
@@ -130,16 +110,25 @@ export const PolymorphicNavbar = () => {
               </AnimatePresence>
 
               {/* Link text */}
-              <motion.button
-                onClick={() => handleNavClick(href)}
-                className={`relative block px-3 py-2 text-sm transition-colors cursor-pointer ${styles.link} bg-none border-none`}
-                whileHover={{
-                  scale: 1.05,
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {label}
-              </motion.button>
+              {href === '/#contact' ? (
+                <motion.button
+                  onClick={() => setIsContactOpen(true)}
+                  className={`relative block px-3 py-2 text-sm transition-colors cursor-pointer ${styles.link} bg-none border-none`}
+                  whileHover={{
+                    scale: 1.05,
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {label}
+                </motion.button>
+              ) : (
+                <Link
+                  href={href}
+                  className={`relative block px-3 py-2 text-sm transition-colors cursor-pointer ${styles.link}`}
+                >
+                  {label}
+                </Link>
+              )}
             </motion.div>
           ))}
 
@@ -169,6 +158,6 @@ export const PolymorphicNavbar = () => {
         </div>
       </motion.nav>
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-    </AnimatePresence>
+    </>
   );
 };

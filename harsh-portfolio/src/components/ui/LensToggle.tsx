@@ -48,22 +48,22 @@ export const LensToggle = () => {
       case 'product':
         return {
           background: 'bg-white shadow-sm rounded-full',
-          textColor: 'text-slate-800',
+          textColor: 'text-slate-900 font-semibold',
         };
       case 'engineering':
         return {
           background: 'bg-slate-800 border border-slate-600 rounded-sm',
-          textColor: 'text-cyan-400 font-mono tracking-wider',
+          textColor: 'text-cyan-200 font-mono tracking-wider font-semibold',
         };
       case 'agentic':
         return {
           background: 'bg-violet-600 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]',
-          textColor: 'text-white font-medium drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]',
+          textColor: 'text-white font-semibold drop-shadow-[0_0_10px_rgba(255,255,255,0.35)]',
         };
       default:
         return {
           background: 'bg-white shadow-sm rounded-full',
-          textColor: 'text-slate-800',
+          textColor: 'text-slate-900 font-semibold',
         };
     }
   };
@@ -87,14 +87,11 @@ export const LensToggle = () => {
   const inactiveTextColor = getInactiveTextColor();
 
   return (
-    <AnimatePresence mode="wait">
       <motion.div
-        key={lens}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.4 }}
-        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-40 px-2 py-2 ${containerStyles.borderRadius} ${containerStyles.container} transition-all duration-700`}
+        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-40 px-2 py-2 ${containerStyles.borderRadius} ${containerStyles.container} transition-all duration-700 ease-in-out`}
       >
         <div className="flex items-center gap-2">
           {LENS_OPTIONS.map((option) => {
@@ -103,7 +100,7 @@ export const LensToggle = () => {
               <motion.button
                 key={option}
                 onClick={() => setLens(lensMap[option])}
-                className="relative px-6 py-2 text-sm font-medium transition-colors cursor-pointer"
+                className="relative px-6 py-2 text-sm font-medium transition-colors duration-500 ease-in-out cursor-pointer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -136,6 +133,5 @@ export const LensToggle = () => {
           })}
         </div>
       </motion.div>
-    </AnimatePresence>
   );
 };

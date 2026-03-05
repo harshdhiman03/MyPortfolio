@@ -34,6 +34,15 @@ export const Hero = () => {
   const content = HERO_CONTENT[lens];
   const Component = content.component;
 
+  const handleCTAClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (lens === 'agentic') {
+      window.dispatchEvent(new CustomEvent('open-agent-chat'));
+    } else {
+      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section
       className={`relative min-h-screen overflow-hidden py-20 px-4 transition-colors duration-700 ${
@@ -185,6 +194,7 @@ export const Hero = () => {
                 className="pt-4"
               >
                 <motion.button
+                  onClick={handleCTAClick}
                   whileHover={
                     lens === 'product'
                       ? { scale: 1.02 }

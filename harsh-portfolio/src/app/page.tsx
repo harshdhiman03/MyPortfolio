@@ -52,7 +52,7 @@ export default function HomePage() {
       <Hero />
 
       {/* Projects Section */}
-      <section className={`relative z-10 w-full px-4 py-16 md:py-24 ${styles.projectSection}`}>
+      <section id="projects" className={`relative z-10 w-full px-4 py-16 md:py-24 ${styles.projectSection}`}>
         <div className="max-w-7xl mx-auto">
           <ProjectGrid onSelectProject={setSelectedProject} />
         </div>

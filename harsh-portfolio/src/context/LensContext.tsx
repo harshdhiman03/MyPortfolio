@@ -18,19 +18,41 @@ interface LensContextProps {
 const LensContext = createContext<LensContextProps | undefined>(undefined);
 
 export const LensProvider = ({ children }: { children: ReactNode }) => {
-  const [lens, setLens] = useState<LensType>('product');
+  const [lens, setLensState] = useState<LensType>('product');
+
+  // On mount, read from localStorage
+  React.useEffect(() => {
+    const savedLens = localStorage.getItem('activeLens') as LensType | null;
+    if (
+      savedLens === 'product' ||
+      savedLens === 'engineering' ||
+      savedLens === 'agentic'
+    ) {
+      setLensState(savedLens);
+    }
+  }, []);
+
+  const handleSetLens = (newLens: LensType) => {
+    setLensState(newLens);
+    localStorage.setItem('activeLens', newLens);
+  };
 
   // Simple toggle: cycles through the three lens types
   const toggleLens = () => {
-    setLens(prev => {
-      if (prev === 'product') return 'engineering';
-      if (prev === 'engineering') return 'agentic';
-      return 'product';
+    setLensState((prev) => {
+      const nextLens =
+        prev === 'product'
+          ? 'engineering'
+          : prev === 'engineering'
+          ? 'agentic'
+          : 'product';
+      localStorage.setItem('activeLens', nextLens);
+      return nextLens;
     });
   };
 
   return (
-    <LensContext.Provider value={{ lens, setLens, toggleLens }}>
+    <LensContext.Provider value={{ lens, setLens: handleSetLens, toggleLens }}>
       {children}
     </LensContext.Provider>
   );

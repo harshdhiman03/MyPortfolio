@@ -29,60 +29,90 @@ type GraphLink = {
 const graphData: { nodes: GraphNode[]; links: GraphLink[] } = {
   nodes: [
     { id: 'Me', group: 0, val: 30, name: 'Harsh Dhiman' },
-    { id: 'AI', group: 1, val: 20, name: 'AI & ML' },
-    { id: 'Cloud', group: 2, val: 20, name: 'Cloud & Data' },
-    { id: 'Web', group: 3, val: 20, name: 'Full Stack' },
-    { id: 'Web3', group: 4, val: 20, name: 'Blockchain' },
+
+    { id: 'AI', group: 1, val: 22, name: 'AI & Machine Learning' },
+    { id: 'Cloud', group: 2, val: 18, name: 'Cloud & Data' },
+    { id: 'Web', group: 3, val: 22, name: 'Full Stack Engineering' },
+    { id: 'Tools', group: 4, val: 16, name: 'Developer Tools' },
+
+    // AI / ML
+    { id: 'Python', group: 1, val: 10 },
     { id: 'TensorFlow', group: 1, val: 10 },
-    { id: 'PyTorch', group: 1, val: 10 },
+    { id: 'Transformers', group: 1, val: 10 },
     { id: 'OpenCV', group: 1, val: 10 },
-    { id: 'T5 Transformer', group: 1, val: 10 },
-    { id: 'LSTM & CNN', group: 1, val: 10 },
-    { id: 'LangChain', group: 1, val: 10 },
+    { id: 'Scikit-learn', group: 1, val: 10 },
+    { id: 'Pandas', group: 1, val: 10 },
+    { id: 'NumPy', group: 1, val: 10 },
     { id: 'Hugging Face', group: 1, val: 10 },
+
+    // Cloud & Data
     { id: 'Azure', group: 2, val: 10 },
     { id: 'Databricks', group: 2, val: 10 },
-    { id: 'SQL', group: 2, val: 10 },
-    { id: 'ETL', group: 2, val: 10 },
+    { id: 'PostgreSQL', group: 2, val: 10 },
+    { id: 'MongoDB', group: 2, val: 10 },
+    { id: 'MySQL', group: 2, val: 10 },
+
+    // Full Stack
     { id: 'React.js', group: 3, val: 10 },
     { id: 'Next.js', group: 3, val: 10 },
+    { id: 'JavaScript', group: 3, val: 10 },
     { id: 'TypeScript', group: 3, val: 10 },
-    { id: 'Tailwind', group: 3, val: 10 },
-    { id: '.NET Core', group: 3, val: 10 },
-    { id: 'Python', group: 3, val: 10 },
-    { id: 'Solidity', group: 4, val: 10 },
-    { id: 'Ethers.js', group: 4, val: 10 },
-    { id: 'ThirdWeb', group: 4, val: 10 },
+    { id: 'Node.js', group: 3, val: 10 },
+    { id: 'Express.js', group: 3, val: 10 },
+    { id: 'ASP.NET Core', group: 3, val: 10 },
+    { id: 'Tailwind CSS', group: 3, val: 10 },
+
+    // Tools
+    { id: 'Git', group: 4, val: 10 },
+    { id: 'Postman', group: 4, val: 10 },
+    { id: 'REST APIs', group: 4, val: 10 },
+    { id: 'Streamlit', group: 4, val: 10 }
   ],
+
   links: [
     { source: 'Me', target: 'AI' },
     { source: 'Me', target: 'Cloud' },
     { source: 'Me', target: 'Web' },
-    { source: 'Me', target: 'Web3' },
+    { source: 'Me', target: 'Tools' },
+
+    // AI
+    { source: 'AI', target: 'Python' },
     { source: 'AI', target: 'TensorFlow' },
-    { source: 'AI', target: 'PyTorch' },
+    { source: 'AI', target: 'Transformers' },
     { source: 'AI', target: 'OpenCV' },
-    { source: 'AI', target: 'T5 Transformer' },
-    { source: 'AI', target: 'LSTM & CNN' },
-    { source: 'AI', target: 'LangChain' },
+    { source: 'AI', target: 'Scikit-learn' },
+    { source: 'AI', target: 'Pandas' },
+    { source: 'AI', target: 'NumPy' },
     { source: 'AI', target: 'Hugging Face' },
+
+    // Cloud
     { source: 'Cloud', target: 'Azure' },
     { source: 'Cloud', target: 'Databricks' },
-    { source: 'Cloud', target: 'SQL' },
-    { source: 'Cloud', target: 'ETL' },
+    { source: 'Cloud', target: 'PostgreSQL' },
+    { source: 'Cloud', target: 'MongoDB' },
+    { source: 'Cloud', target: 'MySQL' },
+
+    // Web
     { source: 'Web', target: 'React.js' },
     { source: 'Web', target: 'Next.js' },
+    { source: 'Web', target: 'JavaScript' },
     { source: 'Web', target: 'TypeScript' },
-    { source: 'Web', target: 'Tailwind' },
-    { source: 'Web', target: '.NET Core' },
-    { source: 'Web', target: 'Python' },
-    { source: 'Web3', target: 'Solidity' },
-    { source: 'Web3', target: 'Ethers.js' },
-    { source: 'Web3', target: 'ThirdWeb' },
+    { source: 'Web', target: 'Node.js' },
+    { source: 'Web', target: 'Express.js' },
+    { source: 'Web', target: 'ASP.NET Core' },
+    { source: 'Web', target: 'Tailwind CSS' },
+
+    // Tools
+    { source: 'Tools', target: 'Git' },
+    { source: 'Tools', target: 'Postman' },
+    { source: 'Tools', target: 'REST APIs' },
+    { source: 'Tools', target: 'Streamlit' },
+
+    // Cross connections
+    { source: 'Python', target: 'Databricks' },
     { source: 'Python', target: 'AI' },
-    { source: 'Next.js', target: 'Web3' },
-    { source: 'Databricks', target: 'Python' },
-  ],
+    { source: 'React.js', target: 'Node.js' }
+  ]
 };
 
 const meNode = graphData.nodes.find((node) => node.id === 'Me');

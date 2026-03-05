@@ -282,7 +282,7 @@ lens === 'product'
         <motion.div
           animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className={`text-xs font-mono ${
+          className={`text-xs font-mono pb-2 ${
             lens === 'product'
               ? 'text-slate-500'
               : lens === 'engineering'
@@ -307,15 +307,7 @@ lens === 'product'
 
         {/* Deep Dive Button */}
         <motion.button
-          whileHover={
-            lens === 'product'
-              ? { scale: 1.02, backgroundColor: 'rgb(67, 56, 202)' }
-              : lens === 'engineering'
-              ? { borderColor: 'rgb(34, 211, 238)' }
-              : {
-                  boxShadow: '0 0 20px rgba(168, 85, 247, 0.6)',
-                }
-          }
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
           transition={
             lens === 'product'
@@ -323,18 +315,21 @@ lens === 'product'
               : { type: 'spring', stiffness: 200, damping: 20 }
           }
           onClick={() => onSelectProject(project)}
-          className={`w-full mt-4 px-4 py-3 rounded-none font-mono text-sm font-semibold border transition-all ${
-            lens === 'product'
-              ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 hover:border-indigo-700 shadow-sm hover:shadow-md active:shadow-sm'
-              : lens === 'engineering'
-              ? 'bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 hover:border-cyan-500/50 uppercase tracking-widest text-xs'
-              : 'bg-gradient-to-r from-violet-500/30 to-pink-500/30 hover:from-violet-500/40 hover:to-pink-500/40 text-violet-200 border border-violet-400/50 hover:border-violet-400/80 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50'
-          }`}
+          className={`w-full py-3 px-4 rounded-xl font-medium tracking-wide transition-all duration-300 border backdrop-blur-sm flex items-center justify-center gap-2
+            ${
+              lens === 'product'
+                ? 'bg-indigo-600/90 text-white border-indigo-500 hover:bg-indigo-500 shadow-lg'
+                : lens === 'engineering'
+                ? 'bg-slate-900/50 text-cyan-400 border-cyan-500/30 hover:bg-cyan-900/40 hover:border-cyan-400/60'
+                : 'bg-fuchsia-900/20 text-fuchsia-400 border-fuchsia-500/30 hover:bg-fuchsia-900/40 hover:border-fuchsia-400/60'
+            }
+          `}
         >
-          Deep Dive →
+          Deep Dive &rarr;
         </motion.button>
       </div>
     </motion.div>
   );
 };
+
 
