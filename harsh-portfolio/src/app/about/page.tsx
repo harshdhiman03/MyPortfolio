@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useLens, LensType } from '@/context/LensContext';
+import { useLens } from '@/context/LensContext';
 import { PolymorphicNavbar } from '@/components/ui/PolymorphicNavbar';
 import { AboutHero } from '@/components/about/AboutHero';
 import { NeuralSkillGraph } from '@/components/about/NeuralSkillGraph';
@@ -58,23 +57,7 @@ const AgenticParticles = () => {
 };
 
 export default function AboutPage() {
-  const { lens, setLens } = useLens();
-  const initialLensRef = useRef<LensType | null>(null);
-
-  useEffect(() => {
-    initialLensRef.current = lens;
-
-    if (lens === 'product') {
-      setLens('agentic');
-    }
-
-    return () => {
-      if (initialLensRef.current) {
-        setLens(initialLensRef.current);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { lens } = useLens();
 
   const getPageStyles = () => {
     switch (lens) {

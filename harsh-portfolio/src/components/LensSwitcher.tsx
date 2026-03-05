@@ -43,7 +43,7 @@ export const LensSwitcher = () => {
           {LENS_OPTIONS.map((option) => (
             <button
               key={option.value}
-              onClick={() => setLens(option.value as any)}
+              onClick={() => setLens(option.value)}
               className={`relative px-6 py-2 rounded-full font-medium text-sm transition-colors z-10 ${
                 lens === option.value
                   ? 'text-white'
