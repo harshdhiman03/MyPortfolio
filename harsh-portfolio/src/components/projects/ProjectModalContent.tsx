@@ -232,9 +232,9 @@ const AgenticExecutionTrace = ({ project }: { project: Project }) => {
         variants={itemVariants}
         className="bg-[#05010a] border border-purple-500/30 rounded-xl p-6 shadow-[inset_0_0_50px_rgba(168,85,247,0.1)]"
       >
-        <p className="text-emerald-400 text-xs tracking-widest mb-6">
+        {/* <p className="text-emerald-400 text-xs tracking-widest mb-6">
           [ AGENT_STATUS: ONLINE ] | [ MODE: AUTONOMOUS ] | [ PARADIGM: {content.paradigm} ]
-        </p>
+        </p> */}
 
         <h2 className="text-purple-100 text-2xl font-bold">{content.headline}</h2>
 

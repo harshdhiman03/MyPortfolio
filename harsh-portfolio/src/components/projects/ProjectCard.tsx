@@ -149,29 +149,31 @@ lens === 'product'
         </h3>
 
         {/* Agentic: AI Status indicators */}
-        {lens === 'agentic' && (
-          <div className="mb-4 space-y-2 pb-4 border-b border-violet-500/20">
-            <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="flex items-center gap-2 text-xs"
-            >
-              <div className="w-2 h-2 rounded-full bg-violet-400 shadow-lg shadow-violet-500/50" />
-              <span className="text-violet-300">AGENT STATUS:</span>
-              <span className="text-pink-400 font-mono">ACTIVE</span>
-            </motion.div>
-            <div className="flex items-center gap-2 text-xs">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
-              <span className="text-violet-300">REASONING:</span>
-              <span className="text-emerald-400 font-mono">ENABLED</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
-              <span className="text-violet-300">LEARNING:</span>
-              <span className="text-cyan-400 font-mono">CONTINUOUS</span>
-            </div>
-          </div>
-        )}
+        {lens === 'agentic' 
+        // && (
+        //   <div className="mb-4 space-y-2 pb-4 border-b border-violet-500/20">
+        //     <motion.div
+        //       animate={{ opacity: [0.5, 1, 0.5] }}
+        //       transition={{ duration: 2, repeat: Infinity }}
+        //       className="flex items-center gap-2 text-xs"
+        //     >
+        //       <div className="w-2 h-2 rounded-full bg-violet-400 shadow-lg shadow-violet-500/50" />
+        //       <span className="text-violet-300">AGENT STATUS:</span>
+        //       <span className="text-pink-400 font-mono">ACTIVE</span>
+        //     </motion.div>
+        //     <div className="flex items-center gap-2 text-xs">
+        //       <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
+        //       <span className="text-violet-300">REASONING:</span>
+        //       <span className="text-emerald-400 font-mono">ENABLED</span>
+        //     </div>
+        //     <div className="flex items-center gap-2 text-xs">
+        //       <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
+        //       <span className="text-violet-300">LEARNING:</span>
+        //       <span className="text-cyan-400 font-mono">CONTINUOUS</span>
+        //     </div>
+        //   </div>
+        // )
+        }
 
         {/* Lens-specific content with animation */}
         <AnimatePresence mode="wait">

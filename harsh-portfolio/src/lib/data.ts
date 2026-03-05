@@ -837,9 +837,9 @@ export const projects: Project[] = [
         techStack: ["Python", "CNN", "LSTM", "Streamlit", "Hugging Face"],
       },
       engineering: {
-        headline: "Dual-Pipeline ML Inference Architecture",
-        description: "Optimized dual-pipeline system combining CNNs for spatial ad-content and LSTMs for sequential URL threat analysis.",
-        architecture: "Designed a highly optimized dual-pipeline system combining BeautifulSoup for structured web scraping, LSTM for sequential URL analysis, and CNN for visual ad-content classification.",
+        headline: "ML Inference Architecture",
+        description: "Optimized system combining CNNs for spatial ad-content and LSTMs for sequential URL threat analysis.",
+        architecture: "Designed a highly optimized system combining BeautifulSoup for structured web scraping, LSTM for sequential URL analysis, and CNN for visual ad-content classification.",
         architectureFlow: {
           groups: [
             { id: "ingest", title: "Scraping Layer" },
@@ -872,7 +872,7 @@ export const projects: Project[] = [
           { step: "02", action: "Pass sequence data to LSTM and spatial data to CNN.", result: "Independent threat probabilities calculated." },
           { step: "03", action: "Aggregate dual predictions to output a final 96.8% accurate verdict.", result: "Threat level surfaced rapidly to the end-user." }
         ],
-        coreLogic: "Currently operating as a highly optimized, reactive ML system (input → predict → respond) rather than a fully autonomous agent. However, this robust dual-pipeline architecture lays the exact groundwork required for a future agentic system by enabling continuous retraining loops and automated threat-blocking workflows.",
+        coreLogic: "Currently a reactive ML system, not an autonomous agent. Yet, this dual architecture lays the groundwork for future agentic threat-blocking and automated retraining loops.",
         techStack: ["CNN", "LSTM", "Hugging Face", "Streamlit"]
       }
     }
@@ -937,7 +937,7 @@ export const projects: Project[] = [
           { step: "02", action: "Process prompt through fine-tuned T5 Transformer model.", result: "Domain-specific semantic weights applied to query." },
           { step: "03", action: "Generate context-aware financial recommendation.", result: "Probabilistic text insight returned to the user." }
         ],
-        coreLogic: "This is intentionally designed as a semi-agentic system: it accepts queries and generates context-aware responses, but lacks autonomous goal planning or memory persistence. However, the architecture is primed to become fully agentic by introducing user feedback loops and external tool calling (e.g., executing trades via portfolio APIs).",
+        coreLogic: "Designed as semi-agentic: context-aware but lacks autonomous memory. However, the architecture is primed for full autonomy via feedback loops and external API tool calling.",
         techStack: ["T5 Transformer", "Hugging Face", "Python"]
       }
     }
@@ -1058,7 +1058,7 @@ description: "Pure TensorFlow deep learning pipeline implementing custom attenti
           { step: "02", action: "Calculate multi-head self-attention and cross-attention weights.", result: "Model learns relationships between all words simultaneously." },
           { step: "03", action: "Decode latent representations into highest-probability French tokens.", result: "Accurate translation generated." }
         ],
-        coreLogic: "This project is purely a core NLP capability system, not an autonomous agent. However, sequence-to-sequence Transformers are the fundamental building blocks (the 'brain') of all modern agentic systems, giving them the ability to comprehend context and generate natural language responses.",
+        coreLogic: `Purely a core NLP system, not an agent. Yet, its sequence-to-sequence Transformers form the fundamental "brain" enabling agentic context and natural language generation.`,
         techStack: ["Transformers", "Self-Attention", "TensorFlow"]
       }
     }
