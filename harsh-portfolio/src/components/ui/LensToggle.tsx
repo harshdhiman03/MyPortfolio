@@ -91,16 +91,16 @@ export const LensToggle = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-40 px-2 py-2 ${containerStyles.borderRadius} ${containerStyles.container} transition-all duration-700 ease-in-out`}
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 md:gap-2 p-1.5 md:p-2 rounded-full backdrop-blur-md z-40 max-w-[75vw] overflow-x-auto hide-scrollbar ${containerStyles.container} transition-all duration-700 ease-in-out`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2">
           {LENS_OPTIONS.map((option) => {
             const isActive = lens === lensMap[option];
             return (
               <motion.button
                 key={option}
                 onClick={() => setLens(lensMap[option])}
-                className="relative px-6 py-2 text-sm font-medium transition-colors duration-500 ease-in-out cursor-pointer"
+                className="relative px-3 py-1.5 text-[10px] md:text-sm md:px-6 md:py-2 whitespace-nowrap font-medium transition-colors duration-500 ease-in-out cursor-pointer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -119,15 +119,9 @@ export const LensToggle = () => {
                 </AnimatePresence>
 
                 {/* Text with color animation */}
-                <motion.span
-                  animate={{
-                    color: isActive ? undefined : 'inherit',
-                  }}
-                  transition={{ duration: 0.3 }}
-                  className={isActive ? indicatorStyles.textColor : inactiveTextColor}
-                >
+                <span className={isActive ? indicatorStyles.textColor : inactiveTextColor}>
                   {option}
-                </motion.span>
+                </span>
               </motion.button>
             );
           })}

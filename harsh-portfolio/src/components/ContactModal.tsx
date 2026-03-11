@@ -109,11 +109,12 @@ export const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
               aria-label="Close contact modal"
             >
               <X className="w-5 h-5 stroke-[1.5]" />
+              
             </button>
 
             <div className="relative z-10">
               <h2 className="text-3xl font-semibold tracking-tight text-white mb-2">
-                Let&apos;s build something.
+                Thanks for contacting.
               </h2>
               <p className="text-sm text-slate-400 mb-8">
                 Share a quick note and I&apos;ll get back to you.

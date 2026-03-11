@@ -85,13 +85,13 @@ export const PolymorphicNavbar = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-8 py-3 rounded-full border transition-all duration-700 ease-in-out ${styles.container}`}
+        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 px-3 py-2 md:px-6 md:py-3 w-[95vw] sm:w-auto max-w-fit overflow-x-auto hide-scrollbar flex items-center justify-center rounded-full border transition-all duration-700 ease-in-out ${styles.container}`}
       >
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 md:gap-6">
           {NAVBAR_LINKS.map(({ label, href }) => (
             <motion.div
               key={label}
-              className="relative"
+              className="relative shrink-0"
               onMouseEnter={() => setHoveredLink(label)}
               onMouseLeave={() => setHoveredLink(null)}
             >
@@ -113,7 +113,7 @@ export const PolymorphicNavbar = () => {
               {href === '/#contact' ? (
                 <motion.button
                   onClick={() => setIsContactOpen(true)}
-                  className={`relative block px-3 py-2 text-sm transition-colors cursor-pointer ${styles.link} bg-none border-none`}
+                  className={`relative block text-[11px] sm:text-[13px] md:text-sm px-2 py-1 md:px-3 md:py-2 whitespace-nowrap transition-all cursor-pointer ${styles.link} bg-none border-none`}
                   whileHover={{
                     scale: 1.05,
                   }}
@@ -124,7 +124,7 @@ export const PolymorphicNavbar = () => {
               ) : (
                 <Link
                   href={href}
-                  className={`relative block px-3 py-2 text-sm transition-colors cursor-pointer ${styles.link}`}
+                  className={`relative block text-[11px] sm:text-[13px] md:text-sm px-2 py-1 md:px-3 md:py-2 whitespace-nowrap transition-all cursor-pointer ${styles.link}`}
                 >
                   {label}
                 </Link>
@@ -136,13 +136,13 @@ export const PolymorphicNavbar = () => {
             href="/resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className={`group flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 border backdrop-blur-md ${currentTheme.accent}`}
+            className={`group shrink-0 flex items-center gap-2 text-[11px] sm:text-[13px] md:text-sm px-3 py-1.5 md:px-5 md:py-2 whitespace-nowrap font-medium rounded-full transition-all duration-300 border backdrop-blur-md ${currentTheme.accent}`}
           >
             <span>Resume</span>
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
-              className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              className="w-3 h-3 md:w-4 md:h-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >

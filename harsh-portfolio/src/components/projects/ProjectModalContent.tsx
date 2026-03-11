@@ -106,11 +106,11 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-8 break-words"
     >
       {/* Headline */}
       <motion.div variants={itemVariants}>
-        <h2 className="text-4xl font-bold text-slate-900 mb-2 tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight break-words whitespace-normal">
           {content.headline}
         </h2>
       </motion.div>
@@ -119,13 +119,13 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
       <motion.div variants={itemVariants} className="space-y-6">
         <div>
           <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">The Problem</p>
-          <p className="text-lg text-slate-600 leading-relaxed">
+          <p className="text-base md:text-lg text-slate-600 leading-relaxed break-words whitespace-normal">
             {project.content.engineering.headline}
           </p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">Who It's For</p>
-          <p className="text-lg text-slate-600 leading-relaxed">
+          <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">Who It&apos;s For</p>
+          <p className="text-base md:text-lg text-slate-600 leading-relaxed break-words whitespace-normal">
             {content.painPoint}
           </p>
         </div>
@@ -136,11 +136,11 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
         variants={itemVariants}
         className="bg-blue-50/50 border-l-4 border-blue-500 p-6 rounded-r-lg my-8"
       >
-        <div className="flex items-start gap-3">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <Lightbulb className="w-5 h-5 text-blue-500 flex-shrink-0 mt-1" />
           <div>
             <h3 className="font-semibold text-slate-900 mb-1">Core Innovation</h3>
-            <p className="text-slate-700 italic">
+            <p className="text-slate-700 italic break-words whitespace-normal">
               {content.ahaMoment}
             </p>
           </div>
@@ -169,7 +169,7 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
                     {type === 'S' ? 'Strengths' : type === 'W' ? 'Weaknesses' : type === 'O' ? 'Opportunities' : 'Threats'}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-relaxed break-words whitespace-normal">
                   {swotContent}
                 </p>
               </motion.div>
@@ -181,7 +181,7 @@ const ProductCaseStudy = ({ project }: { project: Project }) => {
       {/* Key Achievements */}
       <motion.div variants={itemVariants}>
         <h3 className="text-2xl font-bold text-slate-900 mb-6">Key Achievements</h3>
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           {content.keyAchievements.map((achievement) => (
             <motion.div
               key={achievement.label}
@@ -226,7 +226,7 @@ const AgenticExecutionTrace = ({ project }: { project: Project }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 font-mono"
+      className="space-y-6 font-mono break-words whitespace-normal"
     >
       <motion.div
         variants={itemVariants}
@@ -301,7 +301,7 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
       case 'engineering':
         return {
           backdrop: 'bg-black/60 backdrop-blur-lg',
-          card: 'bg-slate-950 text-cyan-50 border border-cyan-500/50 font-mono text-sm rounded-none',
+          card: 'bg-slate-950 text-cyan-50 border border-cyan-500/50 font-mono text-sm',
           shadow: 'shadow-[0_0_30px_rgba(6,182,212,0.2)]',
           closeButton: 'text-cyan-400 hover:text-cyan-300',
           header: 'text-cyan-400 font-bold text-2xl uppercase tracking-widest',
@@ -351,7 +351,7 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
           >
             {/* Modal Card */}
             <motion.div
-              className={`w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-2xl ${styles.card} ${styles.shadow} relative`}
+              className={`w-[95%] md:w-[80%] max-w-4xl max-h-[85vh] overflow-y-auto p-4 md:p-8 rounded-2xl ${styles.card} ${styles.shadow} relative`}
             >
               {/* Background visuals based on lens */}
               {lens === 'engineering' && (
@@ -414,20 +414,20 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onClose}
-                className={`absolute top-6 right-6 z-50 p-2 rounded-lg transition-colors ${styles.closeButton}`}
+                className={`absolute top-3 right-3 md:top-6 md:right-6 z-50 p-2 rounded-lg transition-colors ${styles.closeButton}`}
               >
                 <X className="w-6 h-6" />
               </motion.button>
 
               {/* Modal Content */}
-              <div className={`relative z-10 ${lens === 'engineering' ? 'p-6 font-mono text-sm' : 'p-8'}`}>
+              <div className={`relative z-10 break-words whitespace-normal ${lens === 'engineering' ? 'font-mono text-sm' : ''}`}>
                 <motion.div
                   className={`relative overflow-hidden rounded-t-2xl h-64 sm:h-72 border-b ${
                     lens === 'engineering'
-                      ? '-mx-6 -mt-6 mb-6 border-cyan-500/30'
+                      ? '-mx-4 md:-mx-8 -mt-4 md:-mt-8 mb-6 border-cyan-500/30'
                       : lens === 'agentic'
-                      ? '-mx-8 -mt-8 mb-8 border-purple-500/30'
-                      : '-mx-8 -mt-8 mb-8 border-slate-200/60'
+                      ? '-mx-4 md:-mx-8 -mt-4 md:-mt-8 mb-8 border-purple-500/30'
+                      : '-mx-4 md:-mx-8 -mt-4 md:-mt-8 mb-8 border-slate-200/60'
                   }`}
                 >
                   <motion.img
@@ -468,7 +468,7 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
                       //   </pre>
                       // </motion.div>
                     }
-                    <h2 className={styles.header}>
+                    <h2 className={`${styles.header} break-words whitespace-normal`}>
                       {project.title}
                     </h2>
 

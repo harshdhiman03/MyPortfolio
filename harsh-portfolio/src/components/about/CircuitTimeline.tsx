@@ -160,7 +160,7 @@ export const CircuitTimeline = () => {
   const styles = getStyles();
 
   return (
-    <section className={`px-6 py-16 rounded-2xl ${styles.section}`}>
+    <section className={`px-4 md:px-6 py-12 md:py-16 rounded-2xl ${styles.section}`}>
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
           <h2 className={`text-3xl md:text-4xl font-bold ${styles.title}`}>Circuit Timeline</h2>
@@ -169,7 +169,35 @@ export const CircuitTimeline = () => {
           </p>
         </div>
 
-        <div ref={containerRef} className="relative h-[980px] w-full overflow-hidden rounded-2xl">
+        <div className="md:hidden relative px-4 md:px-0">
+          <div className={`absolute left-4 top-0 bottom-0 w-[2px] ${styles.connector}`} />
+          <div className="space-y-6 pl-8">
+            {STOPS.map((stop, index) => (
+              <motion.article
+                key={stop.id}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.35, delay: index * 0.08 }}
+                className={`relative rounded-xl p-4 backdrop-blur-sm ${styles.card}`}
+              >
+                <span
+                  className={`absolute left-[-23px] top-6 w-3 h-3 rounded-full ${styles.connector}`}
+                />
+                <h3 className="text-base font-bold break-words whitespace-normal">
+                  {stop.company} <span className="opacity-70">({stop.role})</span>
+                </h3>
+                <p className="mt-2 text-sm opacity-90 break-words whitespace-normal">{stop.summary}</p>
+                <div className={`mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs ${styles.chip}`}>
+                  <span>[{stop.chipLabel}:</span>
+                  <span>{stop.chipValue}]</span>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+
+        <div ref={containerRef} className="relative hidden md:block h-[980px] w-full overflow-hidden rounded-2xl">
           <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
             <path
               d={TRACK_PATH}
@@ -216,8 +244,8 @@ export const CircuitTimeline = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
-                className={`absolute w-[42%] md:w-[37%] rounded-xl p-4 md:p-5 backdrop-blur-sm ${styles.card} ${
-                  isLeft ? 'left-[4%] md:left-[9%]' : 'right-[4%] md:right-[9%]'
+                className={`absolute w-[37%] rounded-xl p-5 backdrop-blur-sm ${styles.card} ${
+                  isLeft ? 'left-[9%]' : 'right-[9%]'
                 }`}
                 style={{ top: `${stop.top}%` }}
               >
@@ -226,10 +254,10 @@ export const CircuitTimeline = () => {
                     isLeft ? '-right-9' : '-left-9'
                   }`}
                 />
-                <h3 className="text-base md:text-lg font-bold">
+                <h3 className="text-lg font-bold">
                   {stop.company} <span className="opacity-70">({stop.role})</span>
                 </h3>
-                <p className="mt-2 text-sm md:text-base opacity-90">{stop.summary}</p>
+                <p className="mt-2 text-base opacity-90">{stop.summary}</p>
                 <div className={`mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs ${styles.chip}`}>
                   <span>[{stop.chipLabel}:</span>
                   <span>{stop.chipValue}]</span>

@@ -18,35 +18,41 @@ const LENS_TECH_MAP: Record<string, string[]> = {
   agentic: ['T5 Transformer', 'Automation', 'Smart Contracts', 'Bot-resistant'],
 };
 
+const cardTheme: Record<'product' | 'engineering' | 'agentic', { bg: string; border: string; shadow: string }> = {
+  product: {
+    bg: 'bg-white',
+    border: 'border border-gray-200',
+    shadow: 'shadow-sm hover:shadow-md',
+  },
+  engineering: {
+    bg: 'bg-slate-900',
+    border: 'border border-slate-800 hover:border-cyan-500/50',
+    shadow: 'shadow-none',
+  },
+  agentic: {
+    bg: 'backdrop-blur-xl bg-violet-900/10',
+    border: 'border border-transparent hover:border-violet-500/50',
+    shadow: 'shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40',
+  },
+};
+
 const thumbnailVariants = {
   product: {
-    rest: { filter: 'saturate(0.95) brightness(0.95)', scale: 1 },
+    rest: { scale: 1 },
     hover: {
       scale: 1.05,
-      filter: 'saturate(1.1) brightness(1.05)',
-      boxShadow: '0px 15px 30px rgba(0,0,0,0.1)',
     },
   },
   engineering: {
-    rest: {
-      filter: 'contrast(120%) saturate(0%) brightness(0.6) sepia(100%) hue-rotate(190deg)',
-      scale: 1,
-    },
+    rest: { scale: 1 },
     hover: {
       scale: 1.03,
-      filter: 'contrast(105%) saturate(100%) brightness(1) sepia(0%) hue-rotate(0deg)',
-      borderColor: 'rgba(56, 189, 248, 0.8)',
     },
   },
   agentic: {
-    rest: {
-      filter: 'contrast(130%) saturate(130%) hue-rotate(-25deg) brightness(0.8)',
-      scale: 1,
-    },
+    rest: { scale: 1 },
     hover: {
       scale: 1.05,
-      filter: 'contrast(140%) saturate(150%) hue-rotate(0deg) brightness(1.1)',
-      boxShadow: '0px 0px 30px rgba(168,85,247,0.5)',
     },
   },
 };
@@ -57,6 +63,7 @@ const thumbnailTransitions: Record<'product' | 'engineering' | 'agentic', Transi
 };
 export const ProjectCard = ({ project, index, onSelectProject }: ProjectCardProps) => {
   const { lens } = useLens();
+  const activeCardTheme = cardTheme[lens];
   const lensContent = project.content[lens]!;
   const descriptionText =
 lens === 'product'
@@ -91,16 +98,7 @@ lens === 'product'
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: false, amount: 0.3 }}
-      className={`rounded-lg overflow-hidden group transition-all duration-300 ${
-        lens === 'product'
-          ? 'bg-white border border-gray-200 shadow-sm hover:shadow-md'
-          : lens === 'engineering'
-          ? 'bg-slate-900 border border-slate-800 hover:border-cyan-500/50 shadow-none'
-          : 'backdrop-blur-xl bg-violet-900/10 border border-transparent hover:border-violet-500/50 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40'
-
-
-          
-      }`}
+      className={`rounded-lg overflow-hidden group transition-all duration-700 ease-in-out ${activeCardTheme.bg} ${activeCardTheme.border} ${activeCardTheme.shadow}`}
       style={
         lens === 'agentic'
           ? {
@@ -129,20 +127,20 @@ lens === 'product'
       <div
         className={`${
           lens === 'product'
-            ? 'p-8 bg-white'
+            ? 'p-5 md:p-8 bg-white'
             : lens === 'engineering'
-            ? 'p-6 bg-slate-900'
-            : 'p-6 bg-transparent'
+            ? 'p-5 md:p-6 bg-slate-900'
+            : 'p-5 md:p-6 bg-transparent'
         }`}
       >
         {/* Project Title */}
         <h3
           className={`font-bold mb-4 ${
             lens === 'product'
-              ? 'text-2xl text-slate-900 tracking-tight'
+              ? 'text-xl md:text-2xl text-slate-900 tracking-tight break-words'
               : lens === 'engineering'
-              ? 'text-xl text-white font-mono tracking-wider'
-              : 'text-xl text-purple-50 tracking-tight'
+              ? 'text-lg md:text-xl text-white font-mono tracking-wider break-words'
+              : 'text-lg md:text-xl text-purple-50 tracking-tight break-words'
           }`}
         >
           {project.title}
@@ -202,10 +200,10 @@ lens === 'product'
             <p
               className={`text-sm leading-relaxed ${
                 lens === 'product'
-                  ? 'text-slate-600'
+                  ? 'text-slate-600 break-words whitespace-normal'
                   : lens === 'engineering'
-                  ? 'text-slate-300 font-mono text-xs leading-6'
-                  : 'text-purple-200/80'
+                  ? 'text-slate-300 font-mono text-xs leading-6 break-words whitespace-normal'
+                  : 'text-purple-200/80 break-words whitespace-normal'
               }`}
             >
               {descriptionText}
@@ -234,36 +232,45 @@ lens === 'product'
         </AnimatePresence>
 
         {/* Stack Tags */}
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-6">
           <AnimatePresence mode="wait">
-            {project.stack.map((tech) => {
-              const isRelevant = relevantTechs.includes(tech);
-              return (
-                <motion.span
-                  key={tech}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                  className={`px-3 py-1 rounded-none text-xs font-mono transition-all ${
-                    lens === 'product'
-                      ? isRelevant
-                        ? 'bg-indigo-100 border border-indigo-300 text-indigo-700 font-semibold'
-                        : 'bg-gray-100 border border-gray-200 text-gray-500'
-                      : lens === 'engineering'
-                      ? isRelevant
-                        ? 'bg-slate-800 border border-cyan-500/50 text-cyan-300 uppercase tracking-widest'
-                        : 'bg-slate-800/50 border border-slate-700 text-slate-500 uppercase tracking-widest'
-                      : isRelevant
-                      ? 'bg-violet-500/30 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/20'
-                      : 'bg-violet-500/20 border border-violet-500/30 text-violet-300/60'
-                  }`}
-                >
-                  {tech}
-                </motion.span>
-              );
-            })}
+            <motion.div
+              key={`${project.id}-${lens}-stack`}
+              className="flex flex-wrap gap-2"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+            >
+              {project.stack.map((tech) => {
+                const isRelevant = relevantTechs.includes(tech);
+                return (
+                  <motion.span
+                    key={tech}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    className={`px-3 py-1 rounded-none text-xs font-mono transition-all ${
+                      lens === 'product'
+                        ? isRelevant
+                          ? 'bg-indigo-100 border border-indigo-300 text-indigo-700 font-semibold'
+                          : 'bg-gray-100 border border-gray-200 text-gray-500'
+                        : lens === 'engineering'
+                        ? isRelevant
+                          ? 'bg-slate-800 border border-cyan-500/50 text-cyan-300 uppercase tracking-widest'
+                          : 'bg-slate-800/50 border border-slate-700 text-slate-500 uppercase tracking-widest'
+                        : isRelevant
+                        ? 'bg-violet-500/30 border border-violet-400/50 text-violet-200 shadow-lg shadow-violet-500/20'
+                        : 'bg-violet-500/20 border border-violet-500/30 text-violet-300/60'
+                    }`}
+                  >
+                    {tech}
+                  </motion.span>
+                );
+              })}
+            </motion.div>
           </AnimatePresence>
         </div>
 
@@ -315,7 +322,7 @@ lens === 'product'
               : { type: 'spring', stiffness: 200, damping: 20 }
           }
           onClick={() => onSelectProject(project)}
-          className={`w-full py-3 px-4 rounded-xl font-medium tracking-wide transition-all duration-300 border backdrop-blur-sm flex items-center justify-center gap-2
+          className={`w-full py-3 px-4 rounded-xl font-medium tracking-wide transition-all duration-300 border backdrop-blur-sm flex flex-col sm:flex-row items-center justify-center gap-2
             ${
               lens === 'product'
                 ? 'bg-indigo-600/90 text-white border-indigo-500 hover:bg-indigo-500 shadow-lg'
@@ -325,7 +332,7 @@ lens === 'product'
             }
           `}
         >
-          Deep Dive &rarr;
+          Deep Dive
         </motion.button>
       </div>
     </motion.div>
