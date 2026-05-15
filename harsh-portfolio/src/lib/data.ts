@@ -620,7 +620,7 @@ export interface Project {
   id: string;
   title: string;
   img: string;
-  category: 'Professional' | 'Research' | 'Hackathon' | 'AI & Vision' | 'Web3 Gaming' | 'FinTech AI' | 'Cybersecurity' | 'Machine Learning' | 'Frontend Engineering' | 'Cloud Engineering';
+  category: 'Professional' | 'Research' | 'Hackathon' | 'AI & Vision' | 'Web3 Gaming' | 'FinTech AI' | 'Cybersecurity' | 'Machine Learning' | 'Frontend Engineering' | 'Cloud Engineering' | 'AI Analytics Platform';
   stack: string[]; 
   content: {
     product: ProductContent;
@@ -693,6 +693,161 @@ export const projects: Project[] = [
   //   }
   // },
   {
+    "id": "mestor-ai",
+    "title": "Mestor Ai",
+    "img": "/img/MestorAi.png",
+    "category": "AI Analytics Platform",
+    "stack": ["Python", "Streamlit", "Azure OpenAI", "LangGraph", "Pandas"],
+    "content": {
+      "product": {
+        "headline": "Product Feedback Intelligence Platform.",
+        "painPoint": "Traditional feedback review is manual and delayed. Engineering and product teams struggle to rapidly synthesize user feedback into actionable insights, identify sprint-over-sprint degradation, or prioritize engineering tasks based on actual user pain points.",
+        "targetAudience": "Engineering and product teams.",
+        "ahaMoment": "A deterministic pipeline that automates the translation of raw user feedback into a composite product health score, identifies pattern-based risk signals, and generates prioritized, evidence-backed engineering action recommendations.",
+        "swot": {
+          "s": "Fully deterministic scoring and risk detection via pandas math, ensuring consistent results. Graceful degradation when AI is unavailable.",
+          "w": "Currently requires exporting data to CSV since openpyxl lacks a Python 3.14 wheel, adding friction to the workflow.",
+          "o": "Potential to integrate directly with issue trackers (Jira, GitHub) to automatically create the prioritized actions.",
+          "t": "Changes in OpenAI SDK APIs or varying response formats could disrupt the pipeline if schema validation fails."
+        },
+        "keyAchievements": [
+          {
+            "label": "Architecture",
+            "value": "Rule & AI based Hybrid System"
+          },
+          {
+            "label": "Pipeline",
+            "value": "4-Agent Multi-Path"
+          }
+        ],
+        "techStack": ["Streamlit", "Pandas", "Altair"]
+      },
+      "engineering": {
+        "headline": "Schema-First Hybrid LLM Pipeline",
+        "description": "A Streamlit-based web app orchestrating a 4-agent pipeline that processes CSV feedback into structured JSON files via sequential transformations.",
+        "architecture": "The system utilizes a hybrid approach: deterministic rules detect patterns and risks using pandas, while the LLM explains them and generates recommendations. Data flows through a strict sequence: raw CSV -> enriched CSV (Agent 1) -> risk JSON (Agent 2) -> metrics JSON (Agent 3) -> actions JSON (Agent 4). State is managed via `st.session_state` and atomic file writes prevent data corruption. The pipeline can run via direct function calls or a LangGraph DAG.",
+        "architectureFlow": {
+          "groups": [
+            {
+              "id": "ui",
+              "title": "Frontend UI"
+            },
+            {
+              "id": "core",
+              "title": "Orchestration Layer"
+            },
+            {
+              "id": "agents",
+              "title": "Agent Pipeline"
+            }
+          ],
+          "nodes": [
+            {
+              "id": "streamlit",
+              "title": "Streamlit App",
+              "tech": "Python",
+              "groupId": "ui"
+            },
+            {
+              "id": "orchestrator",
+              "title": "Pipeline Orchestrator",
+              "tech": "Direct or LangGraph",
+              "groupId": "core"
+            },
+            {
+              "id": "understanding",
+              "title": "Feedback Understanding",
+              "tech": "Azure OpenAI",
+              "groupId": "agents"
+            },
+            {
+              "id": "risk",
+              "title": "Correlation & Risk",
+              "tech": "Pandas Rules",
+              "groupId": "agents"
+            },
+            {
+              "id": "scoring",
+              "title": "Scoring",
+              "tech": "Pandas Math",
+              "groupId": "agents"
+            },
+            {
+              "id": "recommendation",
+              "title": "Recommendation",
+              "tech": "LLM + Rules",
+              "groupId": "agents"
+            }
+          ],
+          "edges": [
+            {
+              "fromId": "streamlit",
+              "toId": "orchestrator",
+              "labelTop": "trigger run_pipeline()",
+              "labelBottom": ""
+            },
+            {
+              "fromId": "orchestrator",
+              "toId": "understanding",
+              "labelTop": "raw feedback",
+              "labelBottom": "enriched CSV"
+            },
+            {
+              "fromId": "understanding",
+              "toId": "risk",
+              "labelTop": "enriched CSV",
+              "labelBottom": "risk JSON"
+            },
+            {
+              "fromId": "risk",
+              "toId": "scoring",
+              "labelTop": "risk JSON + enriched CSV",
+              "labelBottom": "metrics JSON"
+            },
+            {
+              "fromId": "scoring",
+              "toId": "recommendation",
+              "labelTop": "metrics JSON + risk JSON",
+              "labelBottom": "actions JSON"
+            }
+          ]
+        },
+        "paradigm": "Deterministic ML Pipeline (Path to Agentic)",
+        "coreSnippet": "def run_pipeline(\n    project_path: Path,\n    on_step: Callable[[str, str, int], None] | None = None,\n) -> dict[str, Any]:\n    if os.getenv(\"USE_LANGGRAPH\", \"\").strip().lower() in (\"1\", \"true\", \"yes\"):\n        return _run_via_langgraph(project_path, raw_df, on_step)\n    else:\n        return _run_direct(project_path, raw_df, on_step)",
+        "techStack": ["Python", "Pandas", "LangGraph", "JSON Schema"]
+      },
+      "agentic": {
+        "headline": "Hybrid Deterministic-Generative Multi-Agent System",
+        "description": "The system utilizes four specialized agents. Agent 1 handles semantic enrichment. Agent 2 uses deterministic rules to identify risks, then uses an LLM to explain them. Agent 3 calculates a mathematical health score. Agent 4 uses a multi-factor priority engine and an LLM to generate actionable recommendations. This ensures auditable risk detection while leveraging the LLM for narrative generation.",
+        "paradigm": "Multi-Agent Sequential Pipeline",
+        "reasoningTrace": [
+          {
+            "step": "01",
+            "action": "Agent 1 ingests raw CSV batches and calls the LLM to add semantic fields (sentiment, intent, severity).",
+            "result": "Structured `feedback_enriched.csv` file."
+          },
+          {
+            "step": "02",
+            "action": "Agent 2 applies 6 deterministic pandas detectors to find risks, then optionally uses LLM to generate narrative explanations.",
+            "result": "List of `RiskSignal` dicts in `risk_signals.json`."
+          },
+          {
+            "step": "03",
+            "action": "Agent 3 calculates a 0-100 score based on 5 weighted components and applies regression penalties.",
+            "result": "A single `MetricsSummary` dict in `metrics_summary.json`."
+          },
+          {
+            "step": "04",
+            "action": "Agent 4 applies a 5-factor priority engine to determine issue severity, extracting verbatim quotes as evidence.",
+            "result": "Prioritized list of `ActionRecord` dicts in `actions.json`."
+          }
+        ],
+        "coreLogic": "Rules DETECT risks -> LLM EXPLAINS risks. Enforces priority floors on LLM outputs and degrades gracefully to rule-based defaults if the LLM is unavailable.",
+        "techStack": ["Azure OpenAI", "LangGraph", "Pydantic (via LangGraph/OpenAI)"]
+      }
+    }
+  },
+  {
     id: "foodoptima",
     title: "FoodOptima",
     img:"/img/foodoptimaimg.png",
@@ -759,60 +914,60 @@ export const projects: Project[] = [
       },
     },
   },
-  {
-    id: "runic-realm",
-    title: "Runic Realm",
-    img:"/img/runicrealmimg.png",
-    category: "Web3 Gaming",
-    stack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
-    content: {
-      product: {
-        headline: "Web3 Gaming Without the Friction.",
-        painPoint: "High blockchain transaction costs (gas fees) and constant wallet approval pop-ups ruin the immersive experience for casual gamers.",
-        targetAudience: "Casual gamers and Web3 enthusiasts tired of expensive micro-transactions.",
-        ahaMoment: "Instead of writing every single game move to the blockchain, the platform uses a Session-Based Gaming Model. It batches interactions securely, preserving funds and focus.",
-        swot: {
-          s: "Drastically improves UX by reducing transaction friction by 40% and load times by 30%.",
-          w: "Requires players to have a basic understanding of connecting a Web3 wallet to start.",
-          o: "The session-based model can be licensed as a framework for other Web3 developers.",
-          t: "Dependent on the underlying Base Blockchain's network stability during settlement."
-        },
-        keyAchievements: [
-          { label: "Winner", value: "HACKINDIA SPARK-2" },
-          { label: "Friction Reduced", value: "40%" }
-        ],
-        techStack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
-      },
-      engineering: {
-        headline: "Session-Based Smart Contracts",
-        description: "Next.js client handling local gameplay state before pushing batched Keccak256 hashed payloads to the Base chain.",
-        architecture: "Next.js client with Thirdweb provider, handling gameplay state locally before pushing batched payload to Base Blockchain via Ethers.js.",
-        architectureFlow: {
-          groups: [
-            { id: "client", title: "Player Client" },
-            { id: "session", title: "Session Layer" },
-            { id: "chain", title: "Base Chain" }
-          ],
-          nodes: [
-            { id: "wallet", title: "Wallet Auth", tech: "Thirdweb", groupId: "client" },
-            { id: "game", title: "Gameplay Runtime", tech: "Next.js", groupId: "client" },
-            { id: "sessionMgr", title: "Session Manager", tech: "Ethers.js", groupId: "session" },
-            { id: "hash", title: "State Hashing", tech: "Keccak256", groupId: "session" },
-            { id: "settle", title: "Contract Settlement", tech: "Solidity", groupId: "chain" }
-          ],
-          edges: [
-            { fromId: "wallet", toId: "game", labelTop: "session signature" },
-            { fromId: "game", toId: "sessionMgr", labelTop: "move stream" },
-            { fromId: "sessionMgr", toId: "hash", labelTop: "batched state" },
-            { fromId: "hash", toId: "settle", labelTop: "proof", labelBottom: "final balances" }
-          ]
-        },
-        coreSnippet: "const initializeSession = async () => {\n  const signature = await signer._signTypedData(domain, types, value);\n  setSessionState({ active: true, sig: signature });\n};",
-        techStack: ["Next.js", "Ethers.js", "Solidity"],
-      }
+  // {
+  //   id: "runic-realm",
+  //   title: "Runic Realm",
+  //   img:"/img/runicrealmimg.png",
+  //   category: "Web3 Gaming",
+  //   stack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
+  //   content: {
+  //     product: {
+  //       headline: "Web3 Gaming Without the Friction.",
+  //       painPoint: "High blockchain transaction costs (gas fees) and constant wallet approval pop-ups ruin the immersive experience for casual gamers.",
+  //       targetAudience: "Casual gamers and Web3 enthusiasts tired of expensive micro-transactions.",
+  //       ahaMoment: "Instead of writing every single game move to the blockchain, the platform uses a Session-Based Gaming Model. It batches interactions securely, preserving funds and focus.",
+  //       swot: {
+  //         s: "Drastically improves UX by reducing transaction friction by 40% and load times by 30%.",
+  //         w: "Requires players to have a basic understanding of connecting a Web3 wallet to start.",
+  //         o: "The session-based model can be licensed as a framework for other Web3 developers.",
+  //         t: "Dependent on the underlying Base Blockchain's network stability during settlement."
+  //       },
+  //       keyAchievements: [
+  //         { label: "Winner", value: "HACKINDIA SPARK-2" },
+  //         { label: "Friction Reduced", value: "40%" }
+  //       ],
+  //       techStack: ["Next.js", "Solidity", "Ethers.js", "Thirdweb"],
+  //     },
+  //     engineering: {
+  //       headline: "Session-Based Smart Contracts",
+  //       description: "Next.js client handling local gameplay state before pushing batched Keccak256 hashed payloads to the Base chain.",
+  //       architecture: "Next.js client with Thirdweb provider, handling gameplay state locally before pushing batched payload to Base Blockchain via Ethers.js.",
+  //       architectureFlow: {
+  //         groups: [
+  //           { id: "client", title: "Player Client" },
+  //           { id: "session", title: "Session Layer" },
+  //           { id: "chain", title: "Base Chain" }
+  //         ],
+  //         nodes: [
+  //           { id: "wallet", title: "Wallet Auth", tech: "Thirdweb", groupId: "client" },
+  //           { id: "game", title: "Gameplay Runtime", tech: "Next.js", groupId: "client" },
+  //           { id: "sessionMgr", title: "Session Manager", tech: "Ethers.js", groupId: "session" },
+  //           { id: "hash", title: "State Hashing", tech: "Keccak256", groupId: "session" },
+  //           { id: "settle", title: "Contract Settlement", tech: "Solidity", groupId: "chain" }
+  //         ],
+  //         edges: [
+  //           { fromId: "wallet", toId: "game", labelTop: "session signature" },
+  //           { fromId: "game", toId: "sessionMgr", labelTop: "move stream" },
+  //           { fromId: "sessionMgr", toId: "hash", labelTop: "batched state" },
+  //           { fromId: "hash", toId: "settle", labelTop: "proof", labelBottom: "final balances" }
+  //         ]
+  //       },
+  //       coreSnippet: "const initializeSession = async () => {\n  const signature = await signer._signTypedData(domain, types, value);\n  setSessionState({ active: true, sig: signature });\n};",
+  //       techStack: ["Next.js", "Ethers.js", "Solidity"],
+  //     }
     
-    },
-  },
+  //   },
+  // },
   {
     id: "hacksuraksha",
     title: "HackSuraksha",
@@ -879,72 +1034,72 @@ export const projects: Project[] = [
       }
     }
   },
-  {
-    id: "finspire",
-    title: "FinSpire",
-    img:"/img/finspireimg.png",
-    category: "FinTech AI",
-    stack: ["Next.js", "Python", "T5 Transformer", "TradingView API", "Hugging Face"],
-    content: {
-      product: {
-        headline: "AI-Powered Financial Recommendation Web App.",
-        painPoint: "Retail investors often struggle to interpret raw, volatile financial data and complex charts, lacking access to clear, contextualized market insights.",
-        targetAudience: "Retail investors and everyday traders seeking AI-driven, plain-English market analysis.",
-        ahaMoment: "By fusing real-time TradingView market data with a T5 Transformer fine-tuned on 68,000 financial records, the system translates complex market conditions into actionable, personalized recommendations.",
-        swot: {
-          s: "Leverages a Transformer-based NLP (T5) model with a clean architectural separation between the Next.js frontend and ML backend.",
-          w: "NLP recommendations are probabilistic (not deterministic), and heavily depend on the freshness and quality of the ingested financial data.",
-          o: "Massive scope to evolve into a fully personalized financial assistant via feedback-driven improvement loops.",
-          t: "Extreme financial data volatility and strict regulatory/compliance constraints inherent to the FinTech sector."
-        },
-        keyAchievements: [
-          { label: "Training Data", value: "68,000 Records" },
-          { label: "Integration", value: "Live TradingView" }
-        ],
-        techStack: ["Next.js", "T5 Transformer", "TradingView API", "Python"],
-      },
-      engineering: {
-        headline: "REST-Driven NLP & SSR Architecture",
-        description: "Next.js SSR frontend communicating via strictly typed REST APIs to a low-latency Python T5 Transformer backend.",
-        architecture: "Designed with a strict separation of concerns: a performant Next.js frontend utilizing Server-Side Rendering (SSR) communicates via REST APIs to a Python-based ML backend optimized for inference latency.",
-        architectureFlow: {
-          groups: [
-            { id: "client", title: "Frontend UI" },
-            { id: "api", title: "REST Gateway" },
-            { id: "ml", title: "ML Backend" }
-          ],
-          nodes: [
-            { id: "ui", title: "Next.js App", tech: "SSR & React", groupId: "client" },
-            { id: "charts", title: "Market Charts", tech: "TradingView", groupId: "client" },
-            { id: "gateway", title: "REST API", tech: "Next.js API Routes", groupId: "api" },
-            { id: "inference", title: "T5 Inference Engine", tech: "Python / FastAPI", groupId: "ml" }
-          ],
-          edges: [
-            { fromId: "ui", toId: "charts", labelTop: "render live data" },
-            { fromId: "ui", toId: "gateway", labelTop: "user query + context" },
-            { fromId: "gateway", toId: "inference", labelTop: "REST payload" },
-            { fromId: "inference", toId: "gateway",labelTop: "", labelBottom: "probabilistic insight" }
-          ]
-        },
-        paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
+  // {
+  //   id: "finspire",
+  //   title: "FinSpire",
+  //   img:"/img/finspireimg.png",
+  //   category: "FinTech AI",
+  //   stack: ["Next.js", "Python", "T5 Transformer", "TradingView API", "Hugging Face"],
+  //   content: {
+  //     product: {
+  //       headline: "AI-Powered Financial Recommendation Web App.",
+  //       painPoint: "Retail investors often struggle to interpret raw, volatile financial data and complex charts, lacking access to clear, contextualized market insights.",
+  //       targetAudience: "Retail investors and everyday traders seeking AI-driven, plain-English market analysis.",
+  //       ahaMoment: "By fusing real-time TradingView market data with a T5 Transformer fine-tuned on 68,000 financial records, the system translates complex market conditions into actionable, personalized recommendations.",
+  //       swot: {
+  //         s: "Leverages a Transformer-based NLP (T5) model with a clean architectural separation between the Next.js frontend and ML backend.",
+  //         w: "NLP recommendations are probabilistic (not deterministic), and heavily depend on the freshness and quality of the ingested financial data.",
+  //         o: "Massive scope to evolve into a fully personalized financial assistant via feedback-driven improvement loops.",
+  //         t: "Extreme financial data volatility and strict regulatory/compliance constraints inherent to the FinTech sector."
+  //       },
+  //       keyAchievements: [
+  //         { label: "Training Data", value: "68,000 Records" },
+  //         { label: "Integration", value: "Live TradingView" }
+  //       ],
+  //       techStack: ["Next.js", "T5 Transformer", "TradingView API", "Python"],
+  //     },
+  //     engineering: {
+  //       headline: "REST-Driven NLP & SSR Architecture",
+  //       description: "Next.js SSR frontend communicating via strictly typed REST APIs to a low-latency Python T5 Transformer backend.",
+  //       architecture: "Designed with a strict separation of concerns: a performant Next.js frontend utilizing Server-Side Rendering (SSR) communicates via REST APIs to a Python-based ML backend optimized for inference latency.",
+  //       architectureFlow: {
+  //         groups: [
+  //           { id: "client", title: "Frontend UI" },
+  //           { id: "api", title: "REST Gateway" },
+  //           { id: "ml", title: "ML Backend" }
+  //         ],
+  //         nodes: [
+  //           { id: "ui", title: "Next.js App", tech: "SSR & React", groupId: "client" },
+  //           { id: "charts", title: "Market Charts", tech: "TradingView", groupId: "client" },
+  //           { id: "gateway", title: "REST API", tech: "Next.js API Routes", groupId: "api" },
+  //           { id: "inference", title: "T5 Inference Engine", tech: "Python / FastAPI", groupId: "ml" }
+  //         ],
+  //         edges: [
+  //           { fromId: "ui", toId: "charts", labelTop: "render live data" },
+  //           { fromId: "ui", toId: "gateway", labelTop: "user query + context" },
+  //           { fromId: "gateway", toId: "inference", labelTop: "REST payload" },
+  //           { fromId: "inference", toId: "gateway",labelTop: "", labelBottom: "probabilistic insight" }
+  //         ]
+  //       },
+  //       paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
 
-        coreSnippet: "export async function fetchFinancialInsight(query: string, chartData: any) {\n  const response = await fetch('/api/recommendations', {\n    method: 'POST',\n    body: JSON.stringify({ query, context: chartData })\n  });\n  return response.json();\n}",
-        techStack: ["Next.js", "Python", "REST APIs", "Hugging Face"],
-      },
-      agentic: {
-        description: "The agentic behavior emerges from the contextual fusion of real-time market data and NLP-driven recommendation generation. By autonomously interpreting volatile financial signals through a Transformer lens, the system can surface actionable insights without explicit user prompting, effectively acting as a semi-agentic financial advisor.",
-        headline: "Semi-Agentic Contextual Generator",
-        paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
-        reasoningTrace: [
-          { step: "01", action: "Accept natural language user query alongside current financial state context.", result: "Structured prompt formatted for NLP inference." },
-          { step: "02", action: "Process prompt through fine-tuned T5 Transformer model.", result: "Domain-specific semantic weights applied to query." },
-          { step: "03", action: "Generate context-aware financial recommendation.", result: "Probabilistic text insight returned to the user." }
-        ],
-        coreLogic: "Designed as semi-agentic: context-aware but lacks autonomous memory. However, the architecture is primed for full autonomy via feedback loops and external API tool calling.",
-        techStack: ["T5 Transformer", "Hugging Face", "Python"]
-      }
-    }
-  },
+  //       coreSnippet: "export async function fetchFinancialInsight(query: string, chartData: any) {\n  const response = await fetch('/api/recommendations', {\n    method: 'POST',\n    body: JSON.stringify({ query, context: chartData })\n  });\n  return response.json();\n}",
+  //       techStack: ["Next.js", "Python", "REST APIs", "Hugging Face"],
+  //     },
+  //     agentic: {
+  //       description: "The agentic behavior emerges from the contextual fusion of real-time market data and NLP-driven recommendation generation. By autonomously interpreting volatile financial signals through a Transformer lens, the system can surface actionable insights without explicit user prompting, effectively acting as a semi-agentic financial advisor.",
+  //       headline: "Semi-Agentic Contextual Generator",
+  //       paradigm: "Context-Aware NLP (Path to Autonomous Agent)",
+  //       reasoningTrace: [
+  //         { step: "01", action: "Accept natural language user query alongside current financial state context.", result: "Structured prompt formatted for NLP inference." },
+  //         { step: "02", action: "Process prompt through fine-tuned T5 Transformer model.", result: "Domain-specific semantic weights applied to query." },
+  //         { step: "03", action: "Generate context-aware financial recommendation.", result: "Probabilistic text insight returned to the user." }
+  //       ],
+  //       coreLogic: "Designed as semi-agentic: context-aware but lacks autonomous memory. However, the architecture is primed for full autonomy via feedback loops and external API tool calling.",
+  //       techStack: ["T5 Transformer", "Hugging Face", "Python"]
+  //     }
+  //   }
+  // },
   {
     id: "internal-comm-tool",
     title: "Internal Communication Tool",

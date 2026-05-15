@@ -12,7 +12,7 @@ const HERO_CONTENT = {
   product: {
     headline: 'Crafting Intelligent Full-Stack & AI Experiences.',
     subtitle: 'Bridging deep learning research with seamless, user-centric product design.',
-    cta: 'View Case Study',
+    cta: 'View Projects',
     component: GenerativeUIHero,
   },
   engineering: {

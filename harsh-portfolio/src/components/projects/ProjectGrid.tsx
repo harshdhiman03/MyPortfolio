@@ -14,7 +14,7 @@ interface ProjectGridProps {
 // Section headers for each lens
 const SECTION_HEADERS = {
   product: {
-    title: 'Shipped Products',
+    title: 'User Centric Projects',
     subtitle: 'Real-world applications built with user focus',
   },
   engineering: {
@@ -22,7 +22,7 @@ const SECTION_HEADERS = {
     subtitle: 'Architecture, infrastructure, and system design',
   },
   agentic: {
-    title: 'AI Research & Experiments',
+    title: 'AI Research & Applications',
     subtitle: 'Intelligent systems and advanced algorithms',
   },
 };
