@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
+  AnimatePresence,
   motion,
   useAnimationFrame,
   useMotionValue,
@@ -9,14 +10,15 @@ import {
   useSpring,
 } from 'framer-motion';
 import { useLens } from '@/context/LensContext';
+import { experiences, type Experience } from '@/lib/data';
 
 type CircuitStop = {
   id: string;
   company: string;
   role: string;
   summary: string;
-  chipLabel: string;
-  chipValue: string;
+  badge: string;
+  experience: Experience;
   top: number;
   side: 'left' | 'right';
 };
@@ -24,55 +26,27 @@ type CircuitStop = {
 const TRACK_PATH =
   'M 50 6 C 73 15, 27 24, 50 33 C 73 42, 27 51, 50 60 C 73 69, 27 78, 50 87 C 65 92, 40 96, 50 98';
 
-const STOPS: CircuitStop[] = [
-  {
-    id: 'infosys-se',
-    company: 'Infosys',
-    role: 'System Engineer',
-    summary: 'Automated Workflows (36% Faster).',
-    chipLabel: 'EFFICIENCY',
-    chipValue: '+36%',
-    top: 16,
-    side: 'left',
-  },
-  {
-    id: 'infosys-intern',
-    company: 'Infosys',
-    role: 'Intern',
-    summary: 'React Mailing System.',
-    chipLabel: 'DELIVERY',
-    chipValue: '60% Faster',
-    top: 38,
-    side: 'right',
-  },
-  {
-    id: 'ravvio',
-    company: 'Ravvio Labs',
-    role: 'ML Intern',
-    summary: 'ML Noise Reduction (38% Boost).',
-    chipLabel: 'BOOST',
-    chipValue: '+38%',
-    top: 61,
-    side: 'left',
-  },
-  {
-    id: 'hackindia',
-    company: 'HackIndia Winner',
-    role: 'Hackathon',
-    summary: 'Runic Realm Web3.',
-    chipLabel: 'ACHIEVEMENT',
-    chipValue: 'Winner',
-    top: 84,
-    side: 'right',
-  },
-];
-
 export const CircuitTimeline = () => {
   const { lens } = useLens();
   const containerRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const [selectedExp, setSelectedExp] = useState<Experience | null>(null);
   const pulseX = useMotionValue(50);
   const pulseY = useMotionValue(6);
+  const stops: CircuitStop[] = useMemo(
+    () =>
+      experiences.map((exp, index) => ({
+        id: exp.id,
+        company: exp.company,
+        role: exp.role,
+        summary: exp.shortDesc,
+        badge: exp.badge,
+        experience: exp,
+        top: [16, 42, 68][index] ?? 68 + index * 14,
+        side: index % 2 === 0 ? 'left' : 'right',
+      })),
+    [],
+  );
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -111,6 +85,12 @@ export const CircuitTimeline = () => {
           chip:
             'bg-slate-100 text-slate-700 border border-slate-300 font-mono',
           connector: 'bg-slate-300',
+          readMore:
+            'text-slate-700 border border-slate-300/90 bg-white/80 hover:bg-white hover:border-slate-400/90 hover:shadow-[0_8px_20px_rgba(15,23,42,0.14)]',
+          modalOverlay: 'bg-black/40',
+          modalCard: 'bg-white text-slate-900 border border-slate-200',
+          modalMeta: 'text-slate-500',
+          modalClose: 'hover:bg-slate-100',
         };
       case 'engineering':
         return {
@@ -125,6 +105,12 @@ export const CircuitTimeline = () => {
           chip:
             'bg-slate-800 text-cyan-300 border border-cyan-500/60 font-mono',
           connector: 'bg-cyan-500/70',
+          readMore:
+            'text-cyan-200 border border-cyan-400/50 bg-cyan-400/10 hover:bg-cyan-400/20 hover:border-cyan-300/70 hover:shadow-[0_0_18px_rgba(34,211,238,0.28)]',
+          modalOverlay: 'bg-slate-950/70',
+          modalCard: 'bg-slate-900 text-slate-100 border border-cyan-500/40',
+          modalMeta: 'text-slate-400',
+          modalClose: 'hover:bg-slate-800',
         };
       case 'agentic':
         return {
@@ -139,6 +125,12 @@ export const CircuitTimeline = () => {
           chip:
             'bg-[#120a1f] text-violet-200 border border-violet-400/70 font-mono shadow-[0_0_18px_rgba(168,85,247,0.45)]',
           connector: 'bg-violet-400/80',
+          readMore:
+            'text-violet-100 border border-violet-400/60 bg-violet-500/15 hover:bg-violet-500/25 hover:border-violet-300/80 hover:shadow-[0_0_20px_rgba(167,139,250,0.35)]',
+          modalOverlay: 'bg-black/60',
+          modalCard: 'bg-[#120a1f] text-violet-100 border border-violet-400/45',
+          modalMeta: 'text-violet-300/70',
+          modalClose: 'hover:bg-violet-500/15',
         };
       default:
         return {
@@ -153,6 +145,12 @@ export const CircuitTimeline = () => {
           chip:
             'bg-slate-100 text-slate-700 border border-slate-300 font-mono',
           connector: 'bg-slate-300',
+          readMore:
+            'text-slate-700 border border-slate-300/90 bg-white/80 hover:bg-white hover:border-slate-400/90 hover:shadow-[0_8px_20px_rgba(15,23,42,0.14)]',
+          modalOverlay: 'bg-black/40',
+          modalCard: 'bg-white text-slate-900 border border-slate-200',
+          modalMeta: 'text-slate-500',
+          modalClose: 'hover:bg-slate-100',
         };
     }
   };
@@ -172,7 +170,7 @@ export const CircuitTimeline = () => {
         <div className="md:hidden relative px-4 md:px-0">
           <div className={`absolute left-4 top-0 bottom-0 w-[2px] ${styles.connector}`} />
           <div className="space-y-6 pl-8">
-            {STOPS.map((stop, index) => (
+            {stops.map((stop, index) => (
               <motion.article
                 key={stop.id}
                 initial={{ opacity: 0, y: 14 }}
@@ -187,11 +185,18 @@ export const CircuitTimeline = () => {
                 <h3 className="text-base font-bold break-words whitespace-normal">
                   {stop.company} <span className="opacity-70">({stop.role})</span>
                 </h3>
+                <p className="mt-1 text-xs opacity-70">{stop.experience.date}</p>
                 <p className="mt-2 text-sm opacity-90 break-words whitespace-normal">{stop.summary}</p>
                 <div className={`mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs ${styles.chip}`}>
-                  <span>[{stop.chipLabel}:</span>
-                  <span>{stop.chipValue}]</span>
+                  <span>{stop.badge}</span>
                 </div>
+                <button
+                  onClick={() => setSelectedExp(stop.experience)}
+                  className={`group mt-4 inline-flex items-center gap-4 rounded-full px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase transition-all duration-300 ${styles.readMore}`}
+                >
+                  <span>Read More</span>
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </button>
               </motion.article>
             ))}
           </div>
@@ -234,7 +239,7 @@ export const CircuitTimeline = () => {
             />
           </svg>
 
-          {STOPS.map((stop, index) => {
+          {stops.map((stop, index) => {
             const isLeft = stop.side === 'left';
 
             return (
@@ -257,16 +262,64 @@ export const CircuitTimeline = () => {
                 <h3 className="text-lg font-bold">
                   {stop.company} <span className="opacity-70">({stop.role})</span>
                 </h3>
+                <p className="mt-1 text-xs opacity-70">{stop.experience.date}</p>
                 <p className="mt-2 text-base opacity-90">{stop.summary}</p>
                 <div className={`mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs ${styles.chip}`}>
-                  <span>[{stop.chipLabel}:</span>
-                  <span>{stop.chipValue}]</span>
+                  <span>{stop.badge}</span>
                 </div>
+                <button
+                  onClick={() => setSelectedExp(stop.experience)}
+                  className={`group mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase transition-all duration-300 ${styles.readMore}`}
+                >
+                  <span>Read More</span>
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </button>
               </motion.article>
             );
           })}
         </div>
       </div>
+
+      <AnimatePresence>
+        {selectedExp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm ${styles.modalOverlay}`}
+            onClick={() => setSelectedExp(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-2xl ${styles.modalCard}`}
+            >
+              <button
+                onClick={() => setSelectedExp(null)}
+                className={`absolute right-4 top-4 rounded-full p-2 transition-colors ${styles.modalClose}`}
+              >
+                ✕
+              </button>
+
+              <h3 className="mb-1 pr-10 text-xl font-bold md:text-2xl">{selectedExp.role}</h3>
+              <p className={`mb-6 text-sm ${styles.modalMeta}`}>
+                {selectedExp.company} • {selectedExp.date}
+              </p>
+
+              <ul className="space-y-4">
+                {selectedExp.details.map((point, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm leading-relaxed md:text-base">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -133,7 +133,7 @@ export const PolymorphicNavbar = () => {
           ))}
 
           <a
-            href="/resume.pdf"
+            href="/SDE_ResumeHD.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className={`group shrink-0 flex items-center gap-2 text-[11px] sm:text-[13px] md:text-sm px-3 py-1.5 md:px-5 md:py-2 whitespace-nowrap font-medium rounded-full transition-all duration-300 border backdrop-blur-md ${currentTheme.accent}`}

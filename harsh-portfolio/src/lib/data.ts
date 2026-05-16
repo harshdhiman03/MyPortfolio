@@ -629,6 +629,57 @@ export interface Project {
   };
 }
 
+export interface Experience {
+  id: string;
+  company: string;
+  role: string;
+  date: string;
+  shortDesc: string;
+  badge: string;
+  details: string[];
+}
+
+export const experiences: Experience[] = [
+  {
+    id: "infosys-se",
+    company: "Infosys",
+    role: "System Engineer",
+    date: "08/2025 - Present",
+    shortDesc: "Automated Workflows (36% Faster).",
+    badge: "[EFFICIENCY: +36%]",
+    details: [
+      "Implemented CQRS-based architecture to automate TV authoring workflows, contributing to 36% reduction in process time and improving system scalability.",
+      "Developed vector embedding pipelines stored in Delta tables for Generative AI integration, contributing to systems used in EASA-aligned safety review workflows and enabling faster content generation.",
+      "Processing complex nested schemas with validation and transformation logic, improving data processing efficiency by 25–30%."
+    ]
+  },
+  {
+    id: "infosys-intern",
+    company: "Infosys",
+    role: "System Engineer Intern",
+    date: "01/2025 - 06/2025",
+    shortDesc: "React Mailing System.",
+    badge: "[DELIVERY: 60% Faster]",
+    details: [
+      "Delivered a React-based customizable mailing system with reusable JSX templates and an interactive design toolbar.",
+      "Designed 5+ responsive email templates and contributed to frontend architecture through modular, component-based design.",
+      "Secured user login using JWT-based authentication in Node.js backend, enforcing role-based access control for APIs."
+    ]
+  },
+  {
+    id: "ravvio-intern",
+    company: "Ravvio Labs",
+    role: "Machine Learning Intern",
+    date: "07/2024 - 12/2024",
+    shortDesc: "ML Noise Reduction (38% Boost).",
+    badge: "[BOOST: +38%]",
+    details: [
+      "Analyzed 8 advanced text summarization techniques using Active & Rejection Learning for noise reduction.",
+      "Achieved 38% performance improvement in encoder-decoder architecture using Learning Rate Scheduling, Batch Size Optimization, Regularization, Distillation, Optimizer Tuning."
+    ]
+  }
+];
+
 export const projects: Project[] = [
   // {
   //   id: "infosys-tv",
