@@ -119,7 +119,7 @@ Full Stack
 - Express.js
 - JavaScript / TypeScript
 - Tailwind CSS
-- ASP.NET Core
+- .NET Core
 
 Cloud & Data
 - Azure

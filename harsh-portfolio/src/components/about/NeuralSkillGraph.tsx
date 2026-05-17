@@ -59,7 +59,7 @@ const graphData: { nodes: GraphNode[]; links: GraphLink[] } = {
     { id: 'TypeScript', group: 3, val: 10 },
     { id: 'Node.js', group: 3, val: 10 },
     { id: 'Express.js', group: 3, val: 10 },
-    { id: 'ASP.NET Core', group: 3, val: 10 },
+    { id: '.NET Core', group: 3, val: 10 },
     { id: 'Tailwind CSS', group: 3, val: 10 },
 
     // Tools
@@ -99,7 +99,7 @@ const graphData: { nodes: GraphNode[]; links: GraphLink[] } = {
     { source: 'Web', target: 'TypeScript' },
     { source: 'Web', target: 'Node.js' },
     { source: 'Web', target: 'Express.js' },
-    { source: 'Web', target: 'ASP.NET Core' },
+    { source: 'Web', target: '.NET Core' },
     { source: 'Web', target: 'Tailwind CSS' },
 
     // Tools
