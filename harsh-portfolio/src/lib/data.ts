@@ -620,7 +620,7 @@ export interface Project {
   id: string;
   title: string;
   img: string;
-  category: 'Professional' | 'Research' | 'Hackathon' | 'AI & Vision' | 'Web3 Gaming' | 'FinTech AI' | 'Cybersecurity' | 'Machine Learning' | 'Frontend Engineering' | 'Cloud Engineering' | 'AI Analytics Platform';
+  category: 'Professional' | 'Research' | 'Hackathon' | 'AI & Vision' | 'Web3 Gaming' | 'FinTech AI' | 'Cybersecurity' | 'Machine Learning' | 'Frontend Engineering' | 'Cloud Engineering' | 'AI Analytics Platform' | 'AI Audio Platform';
   stack: string[]; 
   content: {
     product: ProductContent;
@@ -743,6 +743,198 @@ export const projects: Project[] = [
   //     }
   //   }
   // },
+  {
+  "id": "omnilisten",
+  "title": "OmniListen",
+  "img": "/img/OmniListen.png",
+  "category": "AI Audio Platform",
+  "stack": ["Next.js", "TypeScript", "Python", "Supabase", "Groq", "Google Gemini"],
+  "content": {
+    "product": {
+      "headline": "Personalized Multi-Lingual AI News Audiobook Platform.",
+      "painPoint": "Information overload makes keeping up with daily news exhausting. Standard text-to-speech tools synthesizing personalized context, multi-lingual translations, or zero-latency audio streaming.",
+      "targetAudience": "Professionals, tech enthusiasts, researchers, and audio-first learners.",
+      "ahaMoment": "An automated daily briefing engine that ingests multi-source news, matches user interests using a 768-dimensional semantic vector, drafts a personalized dual-speaker podcast script via LLMs, and synthesizes 10-language audio in parallel under 8 seconds.",
+      "swot": {
+        "s": "Recency-weighted 768d vector search, parallelized chunk TTS synthesis yielding 94.5% speedup (8.06s execution), and Dead Letter Queue (DLQ) state machine with 212ms idempotent short-circuiting.",
+        "w": "Relies on serverless cron triggers which require HTTPS header enforcement to prevent 308 redirect authorization stripping.",
+        "o": "Potential to integrate with mobile lockscreen MediaSession APIs, automated RSS podcast feed generation (Apple/Spotify), and custom voice cloning.",
+        "t": "API rate-limiting or provider outages on third-party LLM & speech synthesis services (Groq, Gemini, Google Translate TTS)."
+      },
+      "keyAchievements": [
+        {
+          "label": "Synthesis Speedup",
+          "value": "94.5% "
+        },
+        {
+          "label": "Vector RAG Search",
+          "value": "768d"
+        },
+        {
+          "label": "Fault Tolerance",
+          "value": "Idempotent DLQ"
+        },
+        {
+          "label": "DB Pooling Scaling",
+          "value": "Supavisor Transaction Mode"
+        }
+      ],
+      "techStack": ["Next.js 15", "TypeScript", "Supabase Postgres", "pgvector", "TailwindCSS"]
+    },
+    "engineering": {
+      "headline": "High-Concurrency Async Fan-Out & Vector Search Pipeline",
+      "description": "A Next.js and Python backend platform orchestrating multi-source news ingestion, Gemini 768d vector embedding generation, parallel serverless fan-out workers, and active telemetry vector steering.",
+      "architecture": "OmniListen uses an event-driven serverless fan-out pattern: at 03:00 UTC, multi-source ingestion populates raw articles with Gemini 768d vector embeddings. At 04:00 UTC, a lightweight controller dispatches parallel worker routes per user. Workers check job idempotency via Supabase briefing_jobs, execute recency-decayed vector matching, generate conversational dual-host scripts via Groq LLaMA 3.1 8B, and run parallel TTS chunk synthesis. Database connections route via Supavisor Transaction Pooling with NullPool and statement_cache_size=0 to eliminate prepared statement collisions.",
+      "architectureFlow": {
+        "groups": [
+          {
+            "id": "ingestion",
+            "title": "Multi-Source Ingestion Engine"
+          },
+          {
+            "id": "core",
+            "title": "Fan-Out & Orchestration Layer"
+          },
+          {
+            "id": "generation",
+            "title": "LLM & Speech Synthesis Engine"
+          },
+          {
+            "id": "telemetry",
+            "title": "Telemetry & Vector Steering"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "news_fetch",
+            "title": "News Ingestion (GNews + HN)",
+            "tech": "Python / Aiohttp",
+            "groupId": "ingestion"
+          },
+          {
+            "id": "gemini_embed",
+            "title": "Gemini 768d Vectorizer",
+            "tech": "Google GenAI API",
+            "groupId": "ingestion"
+          },
+          {
+            "id": "fanout_cron",
+            "title": "Daily Briefing Fan-Out",
+            "tech": "Next.js / Vercel Cron",
+            "groupId": "core"
+          },
+          {
+            "id": "briefing_worker",
+            "title": "Idempotent Worker",
+            "tech": "Next.js Serverless",
+            "groupId": "core"
+          },
+          {
+            "id": "vector_search",
+            "title": "Recency Vector Search",
+            "tech": "Supabase pgvector",
+            "groupId": "core"
+          },
+          {
+            "id": "groq_script",
+            "title": "Podcast Scriptwriter",
+            "tech": "Groq LLaMA 3.1 8B",
+            "groupId": "generation"
+          },
+          {
+            "id": "parallel_tts",
+            "title": "Multi-Lingual Speech Engine",
+            "tech": "Parallel TTS / ITTSProvider",
+            "groupId": "generation"
+          },
+          {
+            "id": "telemetry_engine",
+            "title": "Active Vector Steering",
+            "tech": "EMA Recalibration Service",
+            "groupId": "telemetry"
+          }
+        ],
+        "edges": [
+          {
+            "fromId": "news_fetch",
+            "toId": "gemini_embed",
+            "labelTop": "raw text articles",
+            "labelBottom": "768d embeddings"
+          },
+          {
+            "fromId": "gemini_embed",
+            "toId": "fanout_cron",
+            "labelTop": "bulk upsert",
+            "labelBottom": "pgvector"
+          },
+          {
+            "fromId": "fanout_cron",
+            "toId": "briefing_worker",
+            "labelTop": "async fan-out (<300ms)",
+            "labelBottom": "https bearer header"
+          },
+          {
+            "fromId": "briefing_worker",
+            "toId": "vector_search",
+            "labelTop": "interest_vector",
+            "labelBottom": "72h unread news"
+          },
+          {
+            "fromId": "vector_search",
+            "toId": "groq_script",
+            "labelTop": "top matching stories",
+            "labelBottom": "dual-host script"
+          },
+          {
+            "fromId": "groq_script",
+            "toId": "parallel_tts",
+            "labelTop": "script chunks",
+            "labelBottom": "Promise.all MP3s"
+          },
+          {
+            "fromId": "parallel_tts",
+            "toId": "telemetry_engine",
+            "labelTop": "listen telemetry",
+            "labelBottom": "recalibrate V_new"
+          }
+        ]
+      },
+      "paradigm": "Distributed Asynchronous Fan-Out & Vector-RAG Architecture",
+      "coreSnippet": "export async function recalibrateUserInterestVector(userId: string) {\n  const { data: profile } = await supabaseServer.from('profiles').select('interest_vector').eq('id', userId).single();\n  // Exponential Moving Average Math: V_new = Normalize(0.85 * V_curr + 0.15 * Pos - 0.05 * Neg)\n  const alpha = 0.85, beta = positiveCount > 0 ? 0.15 / positiveCount : 0, gamma = negativeCount > 0 ? 0.05 / negativeCount : 0;\n  for (let i = 0; i < dimension; i++) updatedRawVector[i] = (alpha * currentVector[i]) + (beta * positiveSum[i]) - (gamma * negativeSum[i]);\n  const finalVector = normalizeVector(updatedRawVector);\n  await supabaseServer.from('profiles').update({ interest_vector: finalVector }).eq('id', userId);\n}",
+      "techStack": ["Next.js 15", "Supabase", "pgvector", "SQLAlchemy", "asyncpg", "Groq LLaMA 3.1"]
+    },
+    "agentic": {
+      "headline": "Idempotent Vector-RAG & Multi-Agent Telemetry Pipeline",
+      "description": "The platform combines news vector indexing, dual-host conversational script generation, parallel TTS chunk synthesis, state machine checkpointing (DLQ), and real-time active preference steering via exponential moving average vector updates.",
+      "paradigm": "Vector-RAG Multi-Stage Serverless Pipeline",
+      "reasoningTrace": [
+        {
+          "step": "01",
+          "action": "Ingestion engine fetches multi-source news (GNews & Hacker News) and generates 768-dimensional embeddings via Google Gemini.",
+          "result": "Deduplicated articles stored in `articles` table with HNSW pgvector index."
+        },
+        {
+          "step": "02",
+          "action": "Daily briefing controller dispatches parallel worker routes per user with deterministic idempotency keys (`briefing_<user>_<date>`).",
+          "result": "Prevents duplicate runs; completed jobs short-circuit in 212ms."
+        },
+        {
+          "step": "03",
+          "action": "Worker queries recency-weighted vector matches, excluding past 7-day consumed bookmarks, and drafts dual-host podcast script via Groq LLaMA 3.1 8B.",
+          "result": "Conversational script text saved to `briefing_jobs` checkpoint."
+        },
+        {
+          "step": "04",
+          "action": "Speech engine synthesizes audio chunks in parallel (`Promise.all`), uploads MP3s to Supabase Storage, and attaches telemetry vector recalibration.",
+          "result": "0ms playback MP3 URLs & dynamic preference shift via `V_new` equation."
+        }
+      ],
+      "coreLogic": "Idempotence CHECK -> Vector SEARCH -> Groq SCRIPTING -> Parallel TTS -> Telemetry RECALIBRATION. Checkpoints state at each phase so retries resume without duplicating DB rows or wasting LLM tokens.",
+      "techStack": ["Groq LLaMA 3.1 8B", "Google Gemini Embeddings", "Supabase pgvector", "Vercel Cron"]
+    }
+  }
+},
+
   {
     "id": "mestor-ai",
     "title": "Mestor Ai",

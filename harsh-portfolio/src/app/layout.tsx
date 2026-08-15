@@ -5,6 +5,8 @@ import { LensProvider } from "@/context/LensContext";
 import { AgentChat } from "@/components/footer/AgentChat";
 import { LensBackground } from "@/components/LensBackground";
 
+import ReactLenis from "lenis/react";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,12 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LensProvider>
-          <LensBackground>
-            {children}
-          </LensBackground>
-          <AgentChat />
-        </LensProvider>
+        <ReactLenis root>
+          <LensProvider>
+            <LensBackground>
+              {children}
+            </LensBackground>
+            <AgentChat />
+          </LensProvider>
+        </ReactLenis>
       </body>
     </html>
   );

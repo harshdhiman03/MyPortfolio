@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { X, Lightbulb } from 'lucide-react';
 import { useLens } from '@/context/LensContext';
@@ -287,6 +287,18 @@ const AgenticExecutionTrace = ({ project }: { project: Project }) => {
 export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps) => {
   const { lens } = useLens();
 
+  useEffect(() => {
+    if (!project) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [project]);
+
   // Get polymorphic styling based on lens
   const getModalStyles = () => {
     switch (lens) {
@@ -348,10 +360,13 @@ export const ProjectDetailModal = ({ project, onClose }: ProjectDetailModalProps
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
             className={`fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6`}
+            onClick={onClose}
           >
             {/* Modal Card */}
             <motion.div
-              className={`w-[95%] md:w-[80%] max-w-4xl max-h-[85vh] overflow-y-auto p-4 md:p-8 rounded-2xl ${styles.card} ${styles.shadow} relative`}
+              data-lenis-prevent="true"
+              className={`w-[95%] md:w-[80%] max-w-4xl max-h-[85vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 dark:scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500 p-4 md:p-8 rounded-2xl ${styles.card} ${styles.shadow} relative`}
+              onClick={(event) => event.stopPropagation()}
             >
               {/* Background visuals based on lens */}
               {lens === 'engineering' && (

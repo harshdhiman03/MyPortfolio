@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useLens } from '@/context/LensContext';
@@ -14,6 +14,18 @@ interface ModalProps {
 
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const { lens } = useLens();
+
+  useEffect(() => {
+    if (!isOpen) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   // Get lens-specific modal styles
   const getModalStyles = () => {
@@ -114,7 +126,10 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
               </div>
 
               {/* Content */}
-              <div className={`p-6 max-h-[70vh] overflow-y-auto ${styles.textPrimary}`}>
+              <div
+                data-lenis-prevent="true"
+                className={`p-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 dark:scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500 ${styles.textPrimary}`}
+              >
                 {children}
               </div>
             </div>

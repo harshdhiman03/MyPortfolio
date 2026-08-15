@@ -1,17 +1,38 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLens } from '@/context/LensContext';
 import { PolymorphicNavbar } from '@/components/ui/PolymorphicNavbar';
 import { Hero } from '@/components/Hero';
 import { ProjectGrid } from '@/components/projects/ProjectGrid';
 import { ProjectDetailModal } from '@/components/projects/ProjectModalContent';
 import { LensToggle } from '@/components/ui/LensToggle';
-import type { Project } from '@/lib/data';
+import { projects, type Project } from '@/lib/data';
 
 export default function HomePage() {
   const { lens } = useLens();
+  const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Opens a project modal when arriving via ?project=<id> (e.g. from the skill graph)
+  useEffect(() => {
+    const projectId = new URLSearchParams(window.location.search).get('project');
+    if (!projectId) {
+      return;
+    }
+
+    const project = projects.find((p) => p.id === projectId);
+
+    requestAnimationFrame(() => {
+      if (project) {
+        setSelectedProject(project);
+      }
+      document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    router.replace(window.location.pathname, { scroll: false });
+  }, [router]);
 
   // Get polymorphic styling based on lens
   const getPageStyles = () => {

@@ -38,19 +38,28 @@ export const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLFormElement | null>(null);
   const [status, setStatus] = useState<SubmitStatus>('idle');
-  const [queryContext, setQueryContext] = useState('');
   const theme = themeMap[lens] || themeMap.product;
+  const query = searchParams.toString();
+  const queryContext = `path=${pathname}; lens=${lens}${query ? `; query=${query}` : ''}`;
 
   useEffect(() => {
     if (!isOpen) {
-      setStatus('idle');
+      const frame = requestAnimationFrame(() => setStatus('idle'));
+      return () => cancelAnimationFrame(frame);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      document.body.style.overflow = '';
       return;
     }
 
-    const query = searchParams.toString();
-    const context = `path=${pathname}; lens=${lens}${query ? `; query=${query}` : ''}`;
-    setQueryContext(context);
-  }, [isOpen, lens, pathname, searchParams]);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AnimatePresence,
   motion,
@@ -56,6 +56,18 @@ export const CircuitTimeline = () => {
     stiffness: 130,
     damping: 24,
   });
+
+  useEffect(() => {
+    if (!selectedExp) {
+      document.body.style.overflow = '';
+      return;
+    }
+
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedExp]);
 
   useAnimationFrame((time) => {
     const path = pathRef.current;
@@ -294,18 +306,20 @@ export const CircuitTimeline = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className={`relative w-full max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl p-6 md:p-8 shadow-2xl ${styles.modalCard}`}
+              data-lenis-prevent="true"
+              className={`relative w-full max-w-2xl max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 dark:scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500 rounded-2xl p-6 md:p-8 shadow-2xl ${styles.modalCard}`}
             >
               <button
                 onClick={() => setSelectedExp(null)}
                 className={`absolute right-4 top-4 rounded-full p-2 transition-colors ${styles.modalClose}`}
+                aria-label="Close experience details"
               >
-                ✕
+                &times;
               </button>
 
               <h3 className="mb-1 pr-10 text-xl font-bold md:text-2xl">{selectedExp.role}</h3>
               <p className={`mb-6 text-sm ${styles.modalMeta}`}>
-                {selectedExp.company} • {selectedExp.date}
+                {selectedExp.company} &bull; {selectedExp.date}
               </p>
 
               <ul className="space-y-4">
@@ -323,3 +337,4 @@ export const CircuitTimeline = () => {
     </section>
   );
 };
+
